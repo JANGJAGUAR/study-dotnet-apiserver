@@ -1,0 +1,41 @@
+{
+  "Files": [
+    {
+      "Id": "D:\\Computer\\Development\\Game\\Server\\com2us\\r_learn\\HiveServer\\HiveServer\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\HiveServer.bundle.scp.css",
+      "PackagePath": "staticwebassets\\HiveServer.bundle.scp.css"
+    },
+    {
+      "Id": "D:\\Computer\\Development\\Game\\Server\\com2us\\r_learn\\HiveServer\\HiveServer\\wwwroot\\app.css",
+      "PackagePath": "staticwebassets\\app.css"
+    },
+    {
+      "Id": "D:\\Computer\\Development\\Game\\Server\\com2us\\r_learn\\HiveServer\\HiveServer\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css"
+    },
+    {
+      "Id": "D:\\Computer\\Development\\Game\\Server\\com2us\\r_learn\\HiveServer\\HiveServer\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "D:\\Computer\\Development\\Game\\Server\\com2us\\r_learn\\HiveServer\\HiveServer\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.HiveServer.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.HiveServer.props",
+      "PackagePath": "build\\HiveServer.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.HiveServer.props",
+      "PackagePath": "buildMultiTargeting\\HiveServer.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.HiveServer.props",
+      "PackagePath": "buildTransitive\\HiveServer.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
