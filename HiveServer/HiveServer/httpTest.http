@@ -1,8 +1,0 @@
-POST http://localhost:44328/CreateAccount
-Content-Type: application/json
-
-{
-  "ID":"test1",
-  "PW":"123test",
-  "NickName": "ttt"
-}
