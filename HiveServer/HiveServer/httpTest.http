@@ -1,0 +1,7 @@
+﻿POST https://localhost:44390/Login
+Content-Type: application/json
+
+{
+  "Email":"j05@email.com",
+  "AuthToken": ""
+}
