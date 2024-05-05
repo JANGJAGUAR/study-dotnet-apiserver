@@ -91,6 +91,8 @@ public partial class PKTReqLogin : PkHeader
 {
     public string UserID { get; set; }
     public string AuthToken { get; set; }
+    
+    public DateTime Datetime { get; set; }
 }
 
 // 로그인 응답 (로그인 결과 반환)
@@ -251,6 +253,12 @@ public partial class PKTNtfError : PkHeader
     public ERROR_CODE Error { get; set; }
 }
 
+// 클라이언트 HeartBeat (에러코드 반환)
+[MemoryPackable]
+public partial class PKTClientHeartBeat : PkHeader
+{
+    public DateTime dateTime { get; set; }
+}
 
 
 // // 게임 시작 알림 (id 공지)

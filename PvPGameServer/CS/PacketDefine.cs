@@ -76,6 +76,10 @@ public enum PACKETID : int                 // ushort
     RES_IN_ROOM_ENTER = 8032,
 
     NTF_IN_ROOM_LEAVE = 8036,
+    
+    NTF_IN_SERVER_TIMER = 8080,
+    
+    REQ_HEART_BEAT = 8088,
 
 
     // DB 8101 ~ 9000

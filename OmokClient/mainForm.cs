@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Runtime.Versioning;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using MemoryPack;
 using MessagePack;
@@ -322,6 +323,8 @@ namespace OmokClient
             var loginReq = new PKTReqLogin();
             loginReq.UserID = textBoxUserID.Text;
             loginReq.AuthToken = textBoxUserPW.Text;
+            //TODO DateTime.Now로 바로 해도 괜찮은지
+            loginReq.Datetime = DateTime.Now;
 
             var sendPacketData = MemoryPackSerializer.Serialize(loginReq);
                         
@@ -461,5 +464,24 @@ namespace OmokClient
         //     //PostSendPacket(PACKET_ID.LOBBY_LIST_REQ, null);
         //     DevLog.Write($"방 릴레이 요청");
         // }
+        
+        private async Task ClientTimer()
+        {
+            while (true)
+            {
+                // 주기(1초)마다 실행
+                var pktClientTimer = new PKTClientHeartBeat();
+                pktClientTimer.dateTime = DateTime.Now;
+            
+                var sendPacket = MemoryPackSerializer.Serialize(pktClientTimer);
+                PostSendPacket(PACKETID.REQ_HEART_BEAT, sendPacket);
+
+
+                // 1초 대기
+                await Task.Delay(1000);
+            }
+        }
+        
     }
+    
 }

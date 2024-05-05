@@ -23,6 +23,8 @@ public class ServerOption
     // 한 방의 최대 인원
     public int RoomMaxUserCount { get; set; } = 0;
 
-    public int RoomStartNumber { get; set; } = 0;      
+    public int RoomStartNumber { get; set; } = 0;   
+    
+    public int UserCheckCycle { get; set; } = 0;
 
 }    

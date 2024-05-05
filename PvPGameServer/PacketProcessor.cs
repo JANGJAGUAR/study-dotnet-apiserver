@@ -32,7 +32,7 @@ class PacketProcessor
     public void CreateAndStart(List<Room> roomList, ServerOption serverOpt)
     {
         var maxUserCount = serverOpt.RoomMaxCount * serverOpt.RoomMaxUserCount;
-        _userMgr.Init(maxUserCount);
+        _userMgr.Init(maxUserCount, serverOpt.UserCheckCycle);
 
         _roomList = roomList;
         var minRoomNum = _roomList[0].Number;

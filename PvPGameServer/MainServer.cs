@@ -10,6 +10,7 @@ using SuperSocket.SocketBase.Protocol;
 using SuperSocket.SocketBase.Config;
 using System.Threading.Tasks;
 using System.Threading;
+using MemoryPack;
 using PvPGameServer.CS;
 
 namespace PvPGameServer;
@@ -72,6 +73,35 @@ public class MainServer : AppServer<NetworkSession, MemoryPackBinaryRequestInfo>
         {
             _appLogger.LogError("서버 네트워크 시작 실패");
             return;
+        }
+        
+        // 타이머 작동
+        var task = Task.Run(ServerTimer);
+    }
+    private async Task ServerTimer()
+    {
+        // int count = 0;
+        while (true)
+        {
+            // 주기(1초)마다 실행
+            // Console.WriteLine("Timer: " + DateTime.Now);
+            //TODO 이너 패킷 보내기
+            
+            var pktServerTimer = new PKTServerTimer();
+            pktServerTimer.dateTime = DateTime.Now;
+            
+            var sendPacket = MemoryPackSerializer.Serialize(pktServerTimer);
+            MemoryPackPacketHeadInfo.Write(sendPacket, PACKETID.NTF_IN_SERVER_TIMER);
+
+            var memoryPakcPacket = new MemoryPackBinaryRequestInfo(null);
+            memoryPakcPacket.Data = sendPacket;
+            //TODO 서버거니까 세션 id가 없음?
+            memoryPakcPacket.SessionID = "";
+            Distribute(memoryPakcPacket); 
+            
+            
+            // 1초 대기
+            await Task.Delay(1000);
         }
     }
 
@@ -207,6 +237,8 @@ public class MainServer : AppServer<NetworkSession, MemoryPackBinaryRequestInfo>
         reqInfo.SessionID = session.SessionID;       
         Distribute(reqInfo);         
     }
+    
+    
 }
 
 

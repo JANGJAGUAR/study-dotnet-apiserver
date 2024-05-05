@@ -12,14 +12,17 @@ public class UserManager
     UInt64 _userSequenceNumber = 0;
 
     Dictionary<string, User> _userMap = new Dictionary<string, User>();
+    int _userCheckCycle;
 
 
-    public void Init(int maxUserCount)
+    public void Init(int maxUserCount, int userCheckCycle)
     {
         _maxUserCount = maxUserCount;
+        _userCheckCycle = userCheckCycle;
     }
+    
 
-    public ERROR_CODE AddUser(string userID, string sessionID)
+    public ERROR_CODE AddUser(string userID, string sessionID, DateTime dateTime)
     {
         if(IsFullUserCount())
         {
@@ -35,7 +38,7 @@ public class UserManager
         ++_userSequenceNumber;
         
         var user = new User();
-        user.Set(_userSequenceNumber, sessionID, userID);
+        user.Set(_userSequenceNumber, sessionID, userID, dateTime);
         _userMap.Add(sessionID, user);
 
         return ERROR_CODE.NONE;
@@ -62,7 +65,24 @@ public class UserManager
     {
         return _maxUserCount <= _userMap.Count();
     }
-            
+
+    public void UserCheck(DateTime dateTime)
+    {
+        Console.WriteLine("user count: " + _userMap.Count);
+        //TODO 일단 다 검사하는데 나눠서 검사 어케하지
+        // var remainder =  dateTime.Second % _userCheckCycle;
+        foreach (var user in _userMap)
+        {
+            Console.WriteLine("user: " + user.Key);
+            var sessionid = user.Key;
+            var diffSpan = new TimeSpan(user.Value.LastAccessTime.Ticks - dateTime.Ticks);
+            if (diffSpan.TotalSeconds is > 10 or < -10)
+            {
+                RemoveUser(sessionid);
+            }
+        }
+        return;
+    }
 }
 
 public class User
@@ -72,12 +92,15 @@ public class User
    
     public int RoomNumber { get; private set; } = -1;
     string UserID;
+
+    public DateTime LastAccessTime { get; set; }
             
-    public void Set(UInt64 sequence, string sessionID, string userID)
+    public void Set(UInt64 sequence, string sessionID, string userID, DateTime lastAccessTime)
     {
         SequenceNumber = sequence;
         SessionID = sessionID;
         UserID = userID;
+        LastAccessTime = lastAccessTime;
     }                   
     
     public bool IsConfirm(string netSessionID)

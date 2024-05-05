@@ -1,6 +1,7 @@
 ﻿using MemoryPack;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using PvPGameServer.CS;
 
@@ -12,7 +13,9 @@ public class PKHRoom : PKHandler
     // REQ / RES 처리
     List<Room> _roomList = null;
     int _startRoomNumber;
-    
+
+    private DateTime _nowTime;
+
     OmokRule OmokLogic = new OmokRule();
     
     public void SetRooomList(List<Room> roomList)
@@ -21,6 +24,7 @@ public class PKHRoom : PKHandler
         _startRoomNumber = roomList[0].Number;
     }
 
+    // 패킷id에 맞춰서 함수 실행
     public void RegistPacketHandler(Dictionary<int, Action<MemoryPackBinaryRequestInfo>> packetHandlerMap)
     {
         packetHandlerMap.Add((int)PACKETID.REQ_ROOM_ENTER, RequestRoomEnter);
@@ -29,6 +33,8 @@ public class PKHRoom : PKHandler
         packetHandlerMap.Add((int)PACKETID.REQ_ROOM_CHAT, RequestChat);
         packetHandlerMap.Add((int)PACKETID.REQ_GAME_START, RequestGameStart);
         packetHandlerMap.Add((int)PACKETID.REQ_PUT_STONE, RequestPutstone);
+        packetHandlerMap.Add((int)PACKETID.NTF_IN_SERVER_TIMER, NotifyServerTimer);
+        packetHandlerMap.Add((int)PACKETID.REQ_HEART_BEAT, ReqHeartBeat);
     }
 
 
@@ -68,6 +74,32 @@ public class PKHRoom : PKHandler
         }
 
         return (true, room, roomUser);
+    }
+    
+    
+
+    // 패킷이 매초 오기 때문에 매초 처리하는 함수
+    public void NotifyServerTimer(MemoryPackBinaryRequestInfo packetData)
+    {
+        // 시간 갱신
+        var reqData = MemoryPackSerializer.Deserialize<PKTServerTimer>(packetData.Data);
+        _nowTime = reqData.dateTime;
+        Console.WriteLine("Timer: " + _nowTime);
+        
+        // 클라이언트 (10개로 쪼개서) 체크
+        _userMgr.UserCheck(_nowTime);
+    }
+    
+    // 클라한테 받은 HeartBeat를 처리하는 함수
+    public void ReqHeartBeat(MemoryPackBinaryRequestInfo packetData)
+    {
+        // 해당 클라의 마지막 접속 시간 갱신
+        var sessionID = packetData.SessionID;
+        var reqData = MemoryPackSerializer.Deserialize<PKTClientHeartBeat>(packetData.Data);
+        var user = _userMgr.GetUser(sessionID);
+        user.LastAccessTime = reqData.dateTime;
+        
+        //TODO 이거 수정해서 1번만 가게 하면 테스트 가능
     }
 
 
@@ -168,6 +200,7 @@ public class PKHRoom : PKHandler
         }
     }
 
+    // 해당 번호 방에서 세션 id를 가진 클라를 빼겠다
     bool LeaveRoomUser(string sessionID, int roomNumber)
     {
         MainServer.MainLogger.Debug($"LeaveRoomUser. SessionID:{sessionID}");
@@ -204,6 +237,7 @@ public class PKHRoom : PKHandler
         NetSendFunc(sessionID, sendPacket);
     }
 
+    //방에서 빼라는 id가 왔을때
     public void NotifyLeaveInternal(MemoryPackBinaryRequestInfo packetData)
     {
         var sessionID = packetData.SessionID;

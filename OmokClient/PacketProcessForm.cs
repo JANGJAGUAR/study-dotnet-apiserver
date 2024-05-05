@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Versioning;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using MemoryPack;
 using OmokClient.CS;  //클서
@@ -63,6 +64,9 @@ public partial class mainForm : Form
         var responsePkt = MemoryPackSerializer.Deserialize<PKTResLogin>(packetData);
 
         DevLog.Write($"로그인 결과:  {(ERROR_CODE)responsePkt.Result}");
+        
+        // 타이머 작동
+        var task = Task.Run(ClientTimer);
     }
 
 

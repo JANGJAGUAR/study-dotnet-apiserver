@@ -19,9 +19,9 @@ public struct MemoryPackPacketHeadInfo
     }
 
     // id 위치(패킷 헤더 위치+2)에 packetId 값 넣기
-    public static void WritePacketId(byte[] data, UInt16 packetId)
+    public static void WritePacketId(byte[] data, PACKETID packetId)
     {
-        FastBinaryWrite.UInt16(data, PacketHeaderMemoryPackStartPos + 2, packetId);
+        FastBinaryWrite.UInt16(data, PacketHeaderMemoryPackStartPos + 2, (UInt16)packetId);
     }
     
     // 읽어오기 : 패킷 헤더 위치 부터 [사이즈, ID, 타입]
@@ -91,6 +91,7 @@ public partial class PKTReqLogin : PkHeader
 {
     public string UserID { get; set; }
     public string AuthToken { get; set; }
+    public DateTime Datetime { get; set; }
 }
 
 // 로그인 응답 (로그인 결과 반환)
@@ -251,6 +252,12 @@ public partial class PKTNtfError : PkHeader
     public ERROR_CODE Error { get; set; }
 }
 
+// 클라이언트 HeartBeat (에러코드 반환)
+[MemoryPackable]
+public partial class PKTClientHeartBeat : PkHeader
+{
+    public DateTime dateTime { get; set; }
+}
 
 
 // // 게임 시작 알림 (id 공지)

@@ -58,7 +58,7 @@ public class PKHCommon : PKHandler
             }
                             
             var reqData = MemoryPackSerializer.Deserialize<PKTReqLogin>(packetData.Data);
-            var errorCode = _userMgr.AddUser(reqData.UserID, sessionID);
+            var errorCode = _userMgr.AddUser(reqData.UserID, sessionID, reqData.Datetime);
             if (errorCode != ERROR_CODE.NONE)
             {
                 ResponseLoginToClient(errorCode, packetData.SessionID);
