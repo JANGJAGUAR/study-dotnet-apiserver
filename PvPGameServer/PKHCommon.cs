@@ -1,13 +1,15 @@
 ﻿using MemoryPack;
 using System;
 using System.Collections.Generic;
-
+using PvPGameServer.CS;
 
 
 namespace PvPGameServer;
 
 public class PKHCommon : PKHandler
 {
+    // RES들 처리 하는 곳
+    
     public void RegistPacketHandler(Dictionary<int, Action<MemoryPackBinaryRequestInfo>> packetHandlerMap)
     {            
         packetHandlerMap.Add((int)PACKETID.NTF_IN_CONNECT_CLIENT, NotifyInConnectClient);
@@ -41,6 +43,7 @@ public class PKHCommon : PKHandler
     }
 
 
+    // 로그인 요청 받으면 실행
     public void RequestLogin(MemoryPackBinaryRequestInfo packetData)
     {
         var sessionID = packetData.SessionID;
@@ -54,7 +57,7 @@ public class PKHCommon : PKHandler
                 return;
             }
                             
-            var reqData = MemoryPackSerializer.Deserialize< PKTReqLogin>(packetData.Data);
+            var reqData = MemoryPackSerializer.Deserialize<PKTReqLogin>(packetData.Data);
             var errorCode = _userMgr.AddUser(reqData.UserID, sessionID);
             if (errorCode != ERROR_CODE.NONE)
             {
@@ -79,13 +82,13 @@ public class PKHCommon : PKHandler
             MainServer.MainLogger.Error(ex.ToString());
         }
     }
+    
+    // 로그인 응답 보내기
             
     public void ResponseLoginToClient(ERROR_CODE errorCode, string sessionID)
     {
-        var resLogin = new PKTResLogin()
-        {
-            Result = (short)errorCode
-        };
+        var resLogin = new PKTResLogin();
+        resLogin.Result = (short)errorCode;
 
         var sendData = MemoryPackSerializer.Serialize(resLogin);
         MemoryPackPacketHeadInfo.Write(sendData, PACKETID.RES_LOGIN);

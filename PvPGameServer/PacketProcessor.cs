@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 using System.Threading.Tasks.Dataflow;
+using PvPGameServer.CS;
+using SuperSocket.SocketBase.Logging;
 
 
 namespace PvPGameServer;
@@ -54,10 +56,13 @@ class PacketProcessor
 
         MainServer.MainLogger.Info("PacketProcessor::Destory - end");
     }
+  
+    public static ILog MainLogger;
           
     public void InsertPacket(MemoryPackBinaryRequestInfo data)
     {
         _msgBuffer.Post(data);
+
     }
 
     

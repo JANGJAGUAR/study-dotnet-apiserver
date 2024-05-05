@@ -1,4 +1,4 @@
-namespace OmokClient.CS;
+namespace PvPGameServer.CS;
 
 // 솔루션 하나 파서 서버랑 연동 예정
 public enum PACKETID : int                 // ushort
@@ -53,7 +53,6 @@ public enum PACKETID : int                 // ushort
     REQ_PUT_STONE = 1051,
     RES_PUT_STONE = 1052,
     RES_PUT_STONE_INFO = 1053,
-    
     RES_TURN_CHANGE = 1061,
     
     RES_GAME_END = 1071,
@@ -83,5 +82,6 @@ public enum PACKETID : int                 // ushort
     REQ_DB_LOGIN = 8101,
     RES_DB_LOGIN = 8102,
 }
+
 
 

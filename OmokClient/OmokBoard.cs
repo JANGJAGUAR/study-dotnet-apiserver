@@ -2,13 +2,15 @@
 using System.Drawing;
 using System.Media;
 using System.Windows.Forms;
+using ABI.Windows.ApplicationModel.VoiceCommands;
+using MemoryPack;
 using OmokClient.CS;
 
 namespace OmokClient
 {
     public partial class mainForm
     {
-        OmokRule OmokLogic = new OmokRule();
+        // OmokRule OmokLogic = new OmokRule();
 
         enum 돌종류 { 없음, 흑돌, 백돌 };
         private int 시작위치 = 30;
@@ -42,6 +44,11 @@ namespace OmokClient
         private SoundPlayer 오류효과음 = new SoundPlayer("/sound/오류.wav");
 
         private AI ai;
+        
+        //해당 게임 정보
+        private bool 플레이어흑돌 = true;
+        private bool 둘차례 = false;
+        
 
         void Init()
         {
@@ -239,6 +246,36 @@ namespace OmokClient
         }
 
 
+        void 착수(int x, int y)
+        {
+            //TODO 서버에서 처리 후 여기도 돌 둬야함
+            
+            // 내가 흑돌인데 내 차례라 흑돌 or 상대가 흑인데 상대 차례라 흑돌
+            if ((플레이어흑돌 && 둘차례) || (!플레이어흑돌 && !둘차례))
+            {
+                바둑판[x, y] = (int)돌종류.흑돌;
+            }
+            // 내가 백돌인데 내 차례라 흑돌 or 상대가 백인데 상대 차례라 백돌
+            else
+            {
+                바둑판[x, y] = (int)돌종류.백돌;
+            }
+            돌그리기(x, y);
+            현재돌표시();
+            
+            // 차례 변경
+            둘차례 = !둘차례;
+            
+        }
+        
+
+        void 돌존재(int x, int y)
+        {
+            //해당 좌표 착수 후 못 두게 가리기 
+            st.Push(new Point(x, y));
+            Rectangle r = new Rectangle(시작위치, 590, 시작위치 + 돌크기 + 160, 돌크기 + 10);
+            panel1.Invalidate(r);
+        }
 
         private void panel1_MouseDown(object sender, MouseEventArgs e)
         {
@@ -256,21 +293,38 @@ namespace OmokClient
             else if (바둑판[x, y] == (int)돌종류.없음 && !게임종료)             // 바둑판 해당 좌표에 아무것도 없고, 게임이 끝나지 않았으면
             {
 
-                OmokLogic.돌두기(x, y);
-                돌그리기(x, y);
-                현재돌표시();
-                OmokLogic.오목확인(x, y);
+                if (둘차례)
+                {
+                    // req
+                    // st
+                    var requestPkt = new PKTReqPutStone();
+                    requestPkt.xPos = x;
+                    requestPkt.yPos = y;
+
+                    var sendPacketData = MemoryPackSerializer.Serialize(requestPkt);
+                    PostSendPacket(PACKETID.REQ_PUT_STONE, sendPacketData);
+                    DevLog.Write($"돌 두기 요청 : x  [ {x} ], y : [ {y} ] ");
+                    // end
+                    
+                    // OmokLogic.돌두기(x, y); //서버에서 처리, 우린 돌두기 없음
+                    // OmokLogic.오목확인(x, y); //오목 되어도 돌 정보는 전해줘야함 놔야 끝난지 아니까
+                    
+                    //TODO 위가 서버 작업
+                }
+                else
+                {
+                    DevLog.Write($"당신 차례가 아닙니다");
+                }
+                
+                
+                
 
                 if(삼삼 == false)
                 {
                     //TODO 서버에 알린다
-                    // 패킷으로  좌표 보내기 
                     
                     //TODO 서버에 답변을 받으면 아래 로직 실행하기
-                    // 답변 받았을때만
-                    st.Push(new Point(x, y));
-                    Rectangle r = new Rectangle(시작위치, 590, 시작위치 + 돌크기 + 160, 돌크기 + 10);
-                    panel1.Invalidate(r);
+                    
                     
                 }
                 
@@ -332,22 +386,22 @@ namespace OmokClient
 
 
 
-        void 컴퓨터두기()
-        {
-            int x = 0, y = 0;
-
-            do
-            {
-                ai.AI_PutAIPlayer(ref x, ref y, false, 2);
-                OmokLogic.돌두기(x, y);
-            } while (삼삼);
-
-            돌그리기(x, y);
-            현재돌표시();
-            OmokLogic.오목확인(x, y);
-
-            st.Push(new Point(x, y));
-        }
+        // void 컴퓨터두기()
+        // {
+        //     int x = 0, y = 0;
+        //
+        //     do
+        //     {
+        //         ai.AI_PutAIPlayer(ref x, ref y, false, 2);
+        //         OmokLogic.돌두기(x, y);
+        //     } while (삼삼);
+        //
+        //     돌그리기(x, y);
+        //     현재돌표시();
+        //     OmokLogic.오목확인(x, y);
+        //
+        //     st.Push(new Point(x, y));
+        // }
 
                
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using PvPGameServer.CS;
 
 
 namespace PvPGameServer;
@@ -60,7 +61,7 @@ public class UserManager
     bool IsFullUserCount()
     {
         return _maxUserCount <= _userMap.Count();
-     }
+    }
             
 }
 
@@ -101,6 +102,7 @@ public class User
 
     public bool IsStateLogin() { return SequenceNumber != 0; }
 
+    // 방 번호 -1이면 true
     public bool IsStateRoom() { return RoomNumber != -1; }
 }
 

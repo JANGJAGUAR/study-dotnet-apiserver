@@ -36,7 +36,7 @@ public class ReceiveFilter : FixedHeaderReceiveFilter<MemoryPackBinaryRequestInf
     {
         if (!BitConverter.IsLittleEndian)
 			{
-            Array.Reverse(header, offset, 2);
+				Array.Reverse(header, offset, 2);
 			}
 			
         var totalSize = BitConverter.ToUInt16(header, offset + MemoryPackBinaryRequestInfo.PACKET_HEADER_MEMORYPACK_START_POS);

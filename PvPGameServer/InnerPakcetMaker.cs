@@ -1,5 +1,6 @@
 ﻿using MemoryPack;
 using System;
+using PvPGameServer.CS;
 
 
 namespace PvPGameServer;

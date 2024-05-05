@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using MemoryPack;
 
-namespace OmokClient.CS;
+namespace PvPGameServer.CS;
 public struct MemoryPackPacketHeadInfo
 {
     const int PacketHeaderMemoryPackStartPos = 1;

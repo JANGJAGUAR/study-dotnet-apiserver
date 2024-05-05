@@ -17,8 +17,10 @@ public class ServerOption
 
     public int SendBufferSize { get; set; }
 
+    // 방 개수
     public int RoomMaxCount { get; set; } = 0;
 
+    // 한 방의 최대 인원
     public int RoomMaxUserCount { get; set; } = 0;
 
     public int RoomStartNumber { get; set; } = 0;      

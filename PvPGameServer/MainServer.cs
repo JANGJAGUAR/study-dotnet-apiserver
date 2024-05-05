@@ -10,6 +10,7 @@ using SuperSocket.SocketBase.Protocol;
 using SuperSocket.SocketBase.Config;
 using System.Threading.Tasks;
 using System.Threading;
+using PvPGameServer.CS;
 
 namespace PvPGameServer;
 
@@ -211,4 +212,6 @@ public class MainServer : AppServer<NetworkSession, MemoryPackBinaryRequestInfo>
 
 public class NetworkSession : AppSession<NetworkSession, MemoryPackBinaryRequestInfo>
 {
+    // (하트비트 기록용) 클라이언트 객체
+    
 }

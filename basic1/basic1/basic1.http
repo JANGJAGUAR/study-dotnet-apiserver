@@ -1,7 +1,0 @@
-POST http://localhost:11500/Login
-Content-Type: application/json
-
-{
-  "ID":"jacking",
-  "PW":"dsd"
-}

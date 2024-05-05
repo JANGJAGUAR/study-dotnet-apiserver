@@ -80,7 +80,7 @@
             this.btnDisconnect.TabIndex = 29;
             this.btnDisconnect.Text = "접속 끊기";
             this.btnDisconnect.UseVisualStyleBackColor = true;
-            this.btnDisconnect.Click += new System.EventHandler(this.btnDisconnect_Click);
+            this.btnDisconnect.Click += new System.EventHandler(this.btn_Disconnect_Click);
             // 
             // btnConnect
             // 
@@ -91,7 +91,7 @@
             this.btnConnect.TabIndex = 28;
             this.btnConnect.Text = "접속하기";
             this.btnConnect.UseVisualStyleBackColor = true;
-            this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
+            this.btnConnect.Click += new System.EventHandler(this.btn_Connect_Click);
             // 
             // groupBox5
             // 
@@ -114,7 +114,7 @@
             this.textBoxPort.Name = "textBoxPort";
             this.textBoxPort.Size = new System.Drawing.Size(51, 21);
             this.textBoxPort.TabIndex = 18;
-            this.textBoxPort.Text = "11021";
+            this.textBoxPort.Text = "32452";
             this.textBoxPort.WordWrap = false;
             // 
             // label10
@@ -192,7 +192,7 @@
             this.textBoxUserID.Name = "textBoxUserID";
             this.textBoxUserID.Size = new System.Drawing.Size(87, 21);
             this.textBoxUserID.TabIndex = 43;
-            this.textBoxUserID.Text = "jacking";
+            this.textBoxUserID.Text = "A_player";
             this.textBoxUserID.WordWrap = false;
             // 
             // textBoxUserPW
@@ -223,7 +223,7 @@
             this.button2.TabIndex = 46;
             this.button2.Text = "Login";
             this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.button2.Click += new System.EventHandler(this.btn_Login_Click);
             // 
             // Room
             // 
@@ -255,7 +255,7 @@
             this.btnMatching.TabIndex = 54;
             this.btnMatching.Text = "Matching";
             this.btnMatching.UseVisualStyleBackColor = true;
-            this.btnMatching.Click += new System.EventHandler(this.btnMatching_Click);
+            this.btnMatching.Click += new System.EventHandler(this.btn_Matching_Click);
             // 
             // btnRoomChat
             // 
@@ -266,7 +266,7 @@
             this.btnRoomChat.TabIndex = 53;
             this.btnRoomChat.Text = "chat";
             this.btnRoomChat.UseVisualStyleBackColor = true;
-            this.btnRoomChat.Click += new System.EventHandler(this.btnRoomChat_Click);
+            this.btnRoomChat.Click += new System.EventHandler(this.btn_RoomChat_Click);
             // 
             // textBoxRoomSendMsg
             // 
@@ -383,7 +383,7 @@
             this.button5.TabIndex = 53;
             this.button5.Text = "Leave";
             this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
+            this.button5.Click += new System.EventHandler(this.btn_LobbyLeave_Click);
             // 
             // button4
             // 
@@ -394,7 +394,7 @@
             this.button4.TabIndex = 52;
             this.button4.Text = "Enter";
             this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.button4.Click += new System.EventHandler(this.btn_LobbyEnter_Click);
             // 
             // listBoxLobbyChat
             // 
@@ -435,7 +435,7 @@
             this.PutStoneBtn.TabIndex = 55;
             this.PutStoneBtn.Text = "PutStone";
             this.PutStoneBtn.UseVisualStyleBackColor = true;
-            this.PutStoneBtn.Click += new System.EventHandler(this.btn_PutStoneClick);
+            this.PutStoneBtn.Click += new System.EventHandler(this.btn_PutStone_Click);
             // 
             // GameStartBtn
             // 
@@ -446,7 +446,7 @@
             this.GameStartBtn.TabIndex = 55;
             this.GameStartBtn.Text = "GameStart";
             this.GameStartBtn.UseVisualStyleBackColor = true;
-            this.GameStartBtn.Click += new System.EventHandler(this.btn_GameStartClick);
+            this.GameStartBtn.Click += new System.EventHandler(this.btn_GameStart_Click);
             // 
             // panel1
             // 
@@ -478,7 +478,7 @@
             this.button1.TabIndex = 56;
             this.button1.Text = "Chat";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.btn_LobbyChat_Click);
             // 
             // mainForm
             // 

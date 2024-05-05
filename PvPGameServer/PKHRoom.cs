@@ -2,14 +2,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PvPGameServer.CS;
 
 
 namespace PvPGameServer;
 
 public class PKHRoom : PKHandler
 {
+    // REQ / RES 처리
     List<Room> _roomList = null;
     int _startRoomNumber;
+    
+    OmokRule OmokLogic = new OmokRule();
     
     public void SetRooomList(List<Room> roomList)
     {
@@ -23,6 +27,8 @@ public class PKHRoom : PKHandler
         packetHandlerMap.Add((int)PACKETID.REQ_ROOM_LEAVE, RequestLeave);
         packetHandlerMap.Add((int)PACKETID.NTF_IN_ROOM_LEAVE, NotifyLeaveInternal);
         packetHandlerMap.Add((int)PACKETID.REQ_ROOM_CHAT, RequestChat);
+        packetHandlerMap.Add((int)PACKETID.REQ_GAME_START, RequestGameStart);
+        packetHandlerMap.Add((int)PACKETID.REQ_PUT_STONE, RequestPutstone);
     }
 
 
@@ -242,60 +248,144 @@ public class PKHRoom : PKHandler
             MainServer.MainLogger.Error(ex.ToString());
         }
     }
-    public void GameMatch(MemoryPackBinaryRequestInfo packetData)
+    
+    // [게임 시작]
+    // 게임 시작 요청 받으면 실행
+    public void RequestGameStart(MemoryPackBinaryRequestInfo packetData)
     {
         var sessionID = packetData.SessionID;
-        MainServer.MainLogger.Debug("RequestRoomEnter");
+        MainServer.MainLogger.Debug("게임 시작 요청 받음");
 
+        
+        //1명이면 기다리고
+        //2명이면 게임 시작(게임 시작해주는 패킷 보내주기)
+        
         try
         {
             var user = _userMgr.GetUser(sessionID);
 
-            if (user == null || user.IsConfirm(sessionID) == false)
-            {
-                ResponseEnterRoomToClient(ERROR_CODE.ROOM_ENTER_INVALID_USER, sessionID);
-                return;
-            }
-
-            if (user.IsStateRoom())
-            {
-                ResponseEnterRoomToClient(ERROR_CODE.ROOM_ENTER_INVALID_STATE, sessionID);
-                return;
-            }
-
-            var reqData = MemoryPackSerializer.Deserialize<PKTReqRoomEnter>(packetData.Data);
+            var reqData = MemoryPackSerializer.Deserialize<PKTReqGameStart>(packetData.Data);
+            //TODO 이거 안 쓰는 거 같은데 그럼 굳이 뭐 넘겨줄 필요 없지 않나
             
-            var room = GetRoom(reqData.RoomNumber);
-
-            if (room == null)
+            //세션 ID를 패킷 전송을 위해 써야해서 유저id가 아닌 세션 id로 처리
+            var room = GetRoom(user.RoomNumber);
+            if (!room.IsWaiting )
             {
-                ResponseEnterRoomToClient(ERROR_CODE.ROOM_ENTER_INVALID_ROOM_NUMBER, sessionID);
-                return;
+                room.IsWaiting = true;
+                room.WaitingSID = sessionID;
             }
-
-            if (room.AddUser(user.ID(), sessionID) == false)
+            else if(room.WaitingSID!=sessionID)
             {
-                ResponseEnterRoomToClient(ERROR_CODE.ROOM_ENTER_FAIL_ADD_USER, sessionID);
-                return;
+                // 랜덤으로 선 정하기
+                Random rand = new Random();
+                string startSessionId = rand.Next(1, 3) == 1 ? sessionID : room.WaitingSID;
+                
+                // 세션 id로 처리했기에 유저 id로 넘겨줘야 클라가 처리 가능
+                var startUserInfo = CheckRoomAndRoomUser(startSessionId);
+                
+                
+                // 게임 진행을 위해 다음 순서 계속 기록
+                if (startSessionId == sessionID)
+                {
+                    // 들어온 사람 (선), 기다린 사람 (후)
+                    room.NowTurnSID = sessionID;
+                    room.NextTurnSID = room.WaitingSID;
+                }
+                else
+                {
+                    // 들어온 사람 (후), 기다린 사람 (선)
+                    // var secondUserInfo = CheckRoomAndRoomUser(sessionID);
+                    room.NowTurnSID = room.WaitingSID;
+                    room.NextTurnSID = sessionID;
+                }
+
+                ResponseGameStart(ERROR_CODE.NONE, sessionID, startUserInfo.Item3.UserID);
+                ResponseGameStart(ERROR_CODE.NONE, room.WaitingSID, startUserInfo.Item3.UserID);
+                
+                MainServer.MainLogger.Debug("RequestGameStart - Success");
             }
-
-
-            user.EnteredRoom(reqData.RoomNumber);
-
-            room.NotifyPacketUserList(sessionID);
-            room.NofifyPacketNewUser(sessionID, user.ID());
-
-            ResponseEnterRoomToClient(ERROR_CODE.NONE, sessionID);
-
-            MainServer.MainLogger.Debug("RequestEnterInternal - Success");
         }
         catch (Exception ex)
         {
             MainServer.MainLogger.Error(ex.ToString());
         }
     }
-   
-
     
+    // 게임 시작 응답 전달
+    void ResponseGameStart(ERROR_CODE errorCode, string sessionID, string startUserID)
+    {
+        var resGameStart = new PKTResGameStart();
+        resGameStart.StartID = startUserID;
+        
+        var sendPacket = MemoryPackSerializer.Serialize(resGameStart);
+        MemoryPackPacketHeadInfo.Write(sendPacket, PACKETID.RES_GAME_START);
+        
+        NetSendFunc(sessionID, sendPacket);
+    }
+    
+    // [돌 두기]
+    // 돌 두기 요청 받으면 실행
+    public void RequestPutstone(MemoryPackBinaryRequestInfo packetData)
+    {
+        var sessionID = packetData.SessionID;
+        MainServer.MainLogger.Debug("돌 두기 요청 받음");
+
+        try
+        {
+            var user = _userMgr.GetUser(sessionID);
+            var room = GetRoom(user.RoomNumber);
+            
+            var reqData = MemoryPackSerializer.Deserialize<PKTReqPutStone>(packetData.Data);
+            var putStoneResult = OmokLogic.돌두기(reqData.xPos, reqData.yPos);
+            
+            // 돌을 둔 클라한테는 결과 반환
+            ResponsePutstone(putStoneResult, sessionID, reqData.xPos, reqData.yPos);
+            
+            // 다음에 둘 클라한테는 턴 넘어가는걸 반환
+            if (putStoneResult == ERROR_CODE.NONE)
+            {
+                ResponseTurnChange(room.NextTurnSID, reqData.xPos, reqData.yPos);
+                // 턴 교체
+                (room.NowTurnSID, room.NextTurnSID) = (room.NextTurnSID, room.NowTurnSID);
+            }
+            
+            
+            MainServer.MainLogger.Debug("RequestGameStart - Success");
+        }
+        catch (Exception ex)
+        {
+            MainServer.MainLogger.Error(ex.ToString());
+        }
+    }
+    // 지금 둔 클라에게 응답
+    void ResponsePutstone(ERROR_CODE errorCode, string sessionID, int xpos, int ypos)
+    {
+        var resGameStart = new PKTResPutStone();
+
+        
+        resGameStart.xPos = xpos;
+        resGameStart.yPos = ypos;
+        resGameStart.isAble = errorCode;
+        
+        var sendPacket = MemoryPackSerializer.Serialize(resGameStart);
+        MemoryPackPacketHeadInfo.Write(sendPacket, PACKETID.RES_PUT_STONE);
+        
+        NetSendFunc(sessionID, sendPacket);
+    }
+    // 다음에 둘 클라에게 응답
+    void ResponseTurnChange(string sessionID, int xpos, int ypos)
+    {
+        //상대가 둔거 알려줘야 함
+        var resGameStart = new PKTResTurnChange();
+        resGameStart.xPos = xpos;
+        resGameStart.yPos = ypos;
+        
+        var sendPacket = MemoryPackSerializer.Serialize(resGameStart);
+        MemoryPackPacketHeadInfo.Write(sendPacket, PACKETID.RES_TURN_CHANGE);
+        
+        NetSendFunc(sessionID, sendPacket);
+    }
+
+
 
 }

@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Runtime.Versioning;
 using System.Windows.Forms;
+using MemoryPack;
 using MessagePack;
 using OmokClient.CS;
 
@@ -9,6 +10,7 @@ using OmokClient.CS;
 
 namespace OmokClient
 {
+    // REQ 처리
     [SupportedOSPlatform("windows10.0.177630")]
     public partial class mainForm : Form
     {
@@ -61,7 +63,7 @@ namespace OmokClient
             Network.Close();
         }
 
-        private void btnConnect_Click(object sender, EventArgs e)
+        private void btn_Connect_Click(object sender, EventArgs e)
         {
             string address = textBoxIP.Text;
 
@@ -88,7 +90,7 @@ namespace OmokClient
             PacketBuffer.Clear();
         }
 
-        private void btnDisconnect_Click(object sender, EventArgs e)
+        private void btn_Disconnect_Click(object sender, EventArgs e)
         {
             SetDisconnectd();
             Network.Close();
@@ -230,7 +232,7 @@ namespace OmokClient
             labelStatus.Text = "서버 접속이 끊어짐";
         }
 
-        // NOW
+        
         void PostSendPacket(PACKETID packetID, byte[] packetData)
         {
             if (Network.IsConnected() == false)
@@ -243,7 +245,7 @@ namespace OmokClient
             header.TotalSize = (UInt16)packetData.Length;
             header.Id = (UInt16)packetID;
             header.Type = 0;
-            header.Write(packetData);
+            header.WriteHeader(packetData);
 
             // if (packetData != null)
             // {
@@ -258,25 +260,29 @@ namespace OmokClient
 
             SendPacketQueue.Enqueue(packetData);
         }
+        //TODO 위로 쭉 이해 못함
         
-        //TODO 유니크 안 바꾸냐
-        void AddRoomUserList(Int64 userUniqueId, string userID)
+        // [기록 및 수정 함수]
+        
+        //TODO 유니크 없어도 괜찮으면 다 없애기
+        void AddRoomUserList(string userID) // Int64 userUniqueId
         {
-            var msg = $"{userUniqueId}: {userID}";
+            var msg = $"{userID}";  // {userUniqueId}: 
             listBoxRoomUserList.Items.Add(msg);
         }
 
-        void RemoveRoomUserList(Int64 userUniqueId)
+        void RemoveRoomUserList(string userID)
         {
             object removeItem = null;
 
             foreach( var user in listBoxRoomUserList.Items)
             {
-                var items = user.ToString().Split(":");
-                if( items[0].ToInt64() == userUniqueId)
+                var items = user.ToString();
+                if( items == userID)
                 {
+                    // 지울 사람 
                     removeItem = user;
-                    return;
+                    // TODO return; 이 왜 있었을까
                 }
             }
 
@@ -300,45 +306,52 @@ namespace OmokClient
             listBoxRoomChatMsg.SelectedIndex = listBoxRoomChatMsg.Items.Count - 1;
         }
         
-        // 로비 생성 후
-        
+        // TODO 로비 생성 후
         // 로비 메시지 박스에 msg(id, 메시지) 형태로 기록
         void AddLobbyChatMessage(string userID, string message)
         {
             listBoxLobbyChat.Items.Add($"[{userID}]: {message}");
         }
-
         
-
-
-        // 로그인 요청
-        private void button2_Click(object sender, EventArgs e)
+        
+        // [버튼 이벤트 함수]
+        
+        // 로그인 요청 버튼
+        private void btn_Login_Click(object sender, EventArgs e)
         {
             var loginReq = new PKTReqLogin();
             loginReq.UserID = textBoxUserID.Text;
             loginReq.AuthToken = textBoxUserPW.Text;
-            var packet = MessagePackSerializer.Serialize(loginReq);
+
+            var sendPacketData = MemoryPackSerializer.Serialize(loginReq);
                         
-            PostSendPacket(PacketID.ReqLogin, packet);            
+            PostSendPacket(PACKETID.REQ_LOGIN, sendPacketData);            
             DevLog.Write($"로그인 요청:  {textBoxUserID.Text}, {textBoxUserPW.Text}");
+            DevLog.Write($"로그인 요청: {string.Join(", ", sendPacketData)}");
         }
 
+        // 방 입장 요청 버튼
         private void btn_RoomEnter_Click(object sender, EventArgs e)
         {
-            //var requestPkt = new RoomEnterReqPacket();
-            //requestPkt.SetValue(textBoxRoomNumber.Text.ToInt32());
+            var requestPkt = new PKTReqRoomEnter();
+            requestPkt.RoomNumber = textBoxRoomNumber.Text.ToInt32();
 
-            //PostSendPacket(PACKET_ID.ROOM_ENTER_REQ, requestPkt.ToBytes());
-            DevLog.Write($"방 입장 요청:  {textBoxRoomNumber.Text} 번");
+            var sendPacketData = MemoryPackSerializer.Serialize(requestPkt);
+
+            PostSendPacket(PACKETID.REQ_ROOM_ENTER, sendPacketData);
+            DevLog.Write($"방 입장 요청:  {textBoxRoomNumber.Text} 번 방");
         }
 
+        // 방 떠나기 요청 버튼
         private void btn_RoomLeave_Click(object sender, EventArgs e)
         {
-            //PostSendPacket(PACKET_ID.ROOM_LEAVE_REQ,  null);
-            DevLog.Write($"방 입장 요청:  {textBoxRoomNumber.Text} 번");
+            PostSendPacket(PACKETID.REQ_ROOM_LEAVE,  new byte[MemoryPackPacketHeadInfo.HeadSize]);
+            //TODO 위에랑 차이가 뭐지
+            DevLog.Write($"방 입장 요청:  {textBoxRoomNumber.Text} 번 방");
         }
 
-        private void btnRoomChat_Click(object sender, EventArgs e)
+        // 방 채팅 요청 버튼
+        private void btn_RoomChat_Click(object sender, EventArgs e)
         {
             if(textBoxRoomSendMsg.Text.IsEmpty())
             {
@@ -346,79 +359,107 @@ namespace OmokClient
                 return;
             }
 
-            //var requestPkt = new RoomChatReqPacket();
-            //requestPkt.SetValue(textBoxRoomSendMsg.Text);
+            var requestPkt = new PKTReqRoomChat();
+            requestPkt.ChatMessage = textBoxRoomSendMsg.Text;
 
-            //PostSendPacket(PACKET_ID.ROOM_CHAT_REQ, requestPkt.ToBytes());
+            var sendPacketData = MemoryPackSerializer.Serialize(requestPkt);
+
+            PostSendPacket(PACKETID.REQ_ROOM_CHAT, sendPacketData);
             DevLog.Write($"방 채팅 요청");
+            //TODO 위처럼 쓰는게 맞나
         }
 
-        private void btnMatching_Click(object sender, EventArgs e)
+        //TODO (6주차) 매칭서버
+        private void btn_Matching_Click(object sender, EventArgs e)
         {
-            //PostSendPacket(PACKET_ID.MATCH_USER_REQ, null);
+            // PostSendPacket(PACKETID.REQ_MATCH_USER, null);
             DevLog.Write($"매칭 요청");
         }
-
-        // 로비 리스트 요청
-        private void button3_Click(object sender, EventArgs e)
-        {
-            //PostSendPacket(PACKET_ID.LOBBY_LIST_REQ, null);
-            DevLog.Write($"방 릴레이 요청");
-        }
+        
+        
 
         // 로비 입장 요청
-        private void button4_Click(object sender, EventArgs e)
+        //TODO 로비 구현 아직 안함
+        private void btn_LobbyEnter_Click(object sender, EventArgs e)
         {
-            var request = new PKTReqLobbyEnter();
-            request.LobbyNumber = textBox1.Text.ToInt16();
-            var packet = MessagePackSerializer.Serialize(request);
-
-            PostSendPacket(PacketID.ReqLobbyEnter, packet);
-            DevLog.Write($"로비 들어가기 요청. 번호: {textBox1.Text}");
+            // var requestPkt = new PKTReqLobbyEnter();
+            // requestPkt.LobbyNumber = textBox1.Text.ToInt32();
+            // var sendPacketData = MemoryPackSerializer.Serialize(requestPkt);
+            //
+            // PostSendPacket(PACKETID.REQ_LOBBY_ENTER, sendPacketData);
+            DevLog.Write($"로비 들어가기 요청. 로비 번호: {textBox1.Text}");
         }
 
         // 로비 나가기 요청
-        private void button5_Click(object sender, EventArgs e)
+        //TODO 로비 구현 아직 안함
+        private void btn_LobbyLeave_Click(object sender, EventArgs e)
         {
-            PostSendPacket(PacketID.ReqLobbyLeave, null);
-            DevLog.Write($"로비 나가기 요청. 번호: {textBox1.Text}");
+            // PostSendPacket(PACKETID.REQ_LOBBY_LEAVE,  new byte[MemoryPackPacketHeadInfo.HeadSize]);
+            //TODO 위에랑 차이가 뭐지
+            DevLog.Write($"로비 나가기 요청. 로비 번호: {textBox1.Text}");
         }
 
         private void listBoxRoomChatMsg_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            //TODO 무슨 기능이지
+            //룸 채팅 드래그?
         }
 
         private void textBoxRelay_TextChanged(object sender, EventArgs e)
         {
+            //TODO 무슨 기능이지
+            //릴레이?가 뭐지
+        }
+
+        // 돌 두기 요청 버튼
+        private void btn_PutStone_Click(object sender, EventArgs e)
+        {
+            var requestPkt = new PKTReqPutStone();
+            requestPkt.xPos = xPosTextNumber.Text.ToInt32();
+            requestPkt.yPos = xPosTextNumber.Text.ToInt32();
+
+            var sendPacketData = MemoryPackSerializer.Serialize(requestPkt);
+            PostSendPacket(PACKETID.REQ_PUT_STONE, sendPacketData);
+            DevLog.Write($"돌 두기 버튼 요청 : x  [  {xPosTextNumber.Text}  ], y : [ {yPosTextNumber.Text} ] ");
 
         }
 
-        private void btn_PutStoneClick(object sender, EventArgs e)
+        // 게임 시작 버튼
+        private void btn_GameStart_Click(object sender, EventArgs e)
         {
-            //var requestPkt = new PutStoneReqPacket();
-            //requestPkt.SetValue(xPosTextNumber.Text.ToInt16(), yPosTextNumber.Text.ToInt16());
-
-            //PostSendPacket(PACKET_ID.PUT_STONE_REQ, requestPkt.ToBytes());
-            DevLog.Write($"put stone 요청 : x  [  {xPosTextNumber.Text}  ], y : [ {yPosTextNumber.Text} ] ");
-
-        }
-
-        private void btn_GameStartClick(object sender, EventArgs e)
-        {
-            //PostSendPacket(PACKET_ID.GAME_START_REQ, null);
+            var requestPkt = new PKTReqGameStart();
+            requestPkt.UserID = textBoxUserID.Text;
+            //TODO 적혀있는거 말고 인증된거 보내기
+            var sendPacketData = MemoryPackSerializer.Serialize(requestPkt);
+            PostSendPacket(PACKETID.REQ_GAME_START, sendPacketData);
             DevLog.Write($"게임시작 요청");
         }
 
         // 로비 채팅
-        private void button1_Click(object sender, EventArgs e)
+        private void btn_LobbyChat_Click(object sender, EventArgs e)
         {
-            // var request = new PKTReqLobbyChat();
-            // request.Message = textBoxLobbyChat.Text;
-            // var packet = MessagePackSerializer.Serialize(request);
+            // if(textBoxLobbyChat.Text.IsEmpty())
+            // {
+            //     MessageBox.Show("채팅 메시지를 입력하세요");
+            //     return;
+            // }
             //
-            // PostSendPacket(PacketID.ReqLobbyChat, packet);
-            // DevLog.Write("로비 채팅 요청");
+            // var requestPkt = new PKTReqLobbyChat();
+            // requestPkt.ChatMessage = textBoxLobbyChat.Text;
+            //
+            // var sendPacketData = MemoryPackSerializer.Serialize(requestPkt);
+            //
+            // PostSendPacket(PACKETID.REQ_LOBBY_CHAT, sendPacketData);
+            
+            DevLog.Write("로비 채팅 요청");
+            //TODO 위처럼 쓰는게 맞나
         }
+        
+        //TODO 릴레이?
+        // private void button3_Click(object sender, EventArgs e)
+        // {
+        //     //PostSendPacket(PACKET_ID.LOBBY_LIST_REQ, null);
+        //     DevLog.Write($"방 릴레이 요청");
+        // }
     }
 }

@@ -1,6 +1,6 @@
 using System;
 
-namespace OmokClient.CS;
+namespace PvPGameServer.CS;
 
 
 public enum ERROR_CODE : Int16
