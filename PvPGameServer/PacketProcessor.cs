@@ -22,6 +22,8 @@ class PacketProcessor
 
     UserManager _userMgr = new UserManager();
 
+    RoomManager _roomMgr = new RoomManager();
+
     List<Room> _roomList = new List<Room>();
 
     Dictionary<int, Action<MemoryPackBinaryRequestInfo>> _packetHandlerMap = new Dictionary<int, Action<MemoryPackBinaryRequestInfo>>();
@@ -29,12 +31,14 @@ class PacketProcessor
     PKHRoom _roomPacketHandler = new PKHRoom();
             
 
-    public void CreateAndStart(List<Room> roomList, ServerOption serverOpt)
+    public void CreateAndStart(RoomManager roomMgr, ServerOption serverOpt)// List<Room> roomList
     {
         var maxUserCount = serverOpt.RoomMaxCount * serverOpt.RoomMaxUserCount;
-        _userMgr.Init(maxUserCount, serverOpt.UserCheckCycle);
-
-        _roomList = roomList;
+        _userMgr.Init(maxUserCount, serverOpt.UserCheckMaxCount);
+        
+        // _roomList = roomList;
+        _roomMgr = roomMgr;
+        _roomList = roomMgr.GetRoomsList();
         var minRoomNum = _roomList[0].Number;
         var maxRoomNum = _roomList[0].Number + _roomList.Count() - 1;
         
@@ -70,10 +74,10 @@ class PacketProcessor
     {
         PKHandler.NetSendFunc = NetSendFunc;
         PKHandler.DistributeInnerPacket = InsertPacket;
-        _commonPacketHandler.Init(_userMgr);
+        _commonPacketHandler.Init(_userMgr, _roomMgr);
         _commonPacketHandler.RegistPacketHandler(_packetHandlerMap);                
         
-        _roomPacketHandler.Init(_userMgr);
+        _roomPacketHandler.Init(_userMgr, _roomMgr);
         _roomPacketHandler.SetRooomList(_roomList);
         _roomPacketHandler.RegistPacketHandler(_packetHandlerMap);
     }

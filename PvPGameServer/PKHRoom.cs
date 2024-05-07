@@ -77,17 +77,17 @@ public class PKHRoom : PKHandler
     }
     
     
-
+    // [Heart Beat]
     // 패킷이 매초 오기 때문에 매초 처리하는 함수
     public void NotifyServerTimer(MemoryPackBinaryRequestInfo packetData)
     {
         // 시간 갱신
-        var reqData = MemoryPackSerializer.Deserialize<PKTServerTimer>(packetData.Data);
-        _nowTime = reqData.dateTime;
-        Console.WriteLine("Timer: " + _nowTime);
-        
-        // 클라이언트 (10개로 쪼개서) 체크
-        _userMgr.UserCheck(_nowTime);
+        // var reqData = MemoryPackSerializer.Deserialize<PKTServerTimer>(packetData.Data);
+        // _nowTime = reqData.dateTime;
+        // Console.WriteLine("Timer: " + _nowTime);
+
+        _roomMgr.CheckRoomList();
+        _userMgr.CheckUserList();
     }
     
     // 클라한테 받은 HeartBeat를 처리하는 함수
@@ -336,6 +336,9 @@ public class PKHRoom : PKHandler
                 ResponseGameStart(ERROR_CODE.NONE, sessionID, startUserInfo.Item3.UserID);
                 ResponseGameStart(ERROR_CODE.NONE, room.WaitingSID, startUserInfo.Item3.UserID);
                 
+                // 게임 시작 시간 갱신
+                room.IsGameStart = true;
+                room.GameStartTime = DateTime.Now;
                 MainServer.MainLogger.Debug("RequestGameStart - Success");
             }
         }
@@ -375,7 +378,7 @@ public class PKHRoom : PKHandler
             // 돌을 둔 클라한테는 결과 반환
             ResponsePutstone(putStoneResult, sessionID, reqData.xPos, reqData.yPos);
             
-            // 다음에 둘 클라한테는 턴 넘어가는걸 반환
+            // 둘 수 있었으면 다음에 둘 클라한테는 턴 넘어가는걸 반환
             if (putStoneResult == ERROR_CODE.NONE)
             {
                 ResponseTurnChange(room.NextTurnSID, reqData.xPos, reqData.yPos);
@@ -394,12 +397,24 @@ public class PKHRoom : PKHandler
     // 지금 둔 클라에게 응답
     void ResponsePutstone(ERROR_CODE errorCode, string sessionID, int xpos, int ypos)
     {
+        var iswin =  OmokLogic.오목확인(xpos, ypos);
+        
         var resGameStart = new PKTResPutStone();
-
         
         resGameStart.xPos = xpos;
         resGameStart.yPos = ypos;
         resGameStart.isAble = errorCode;
+        //TODO 아래랑 묶기 
+        resGameStart.isWin = iswin;
+        if (iswin)
+        {
+            // 함수 처리
+            var user = _userMgr.GetUser(sessionID);
+            var room = GetRoom(user.RoomNumber);
+            room.IsGameStart = false;
+            room.WaitingSID = "";
+            //TODO 초기화 더 있는지 확인, 방 들어올때도 초기화, 그때랑 다름.
+        }
         
         var sendPacket = MemoryPackSerializer.Serialize(resGameStart);
         MemoryPackPacketHeadInfo.Write(sendPacket, PACKETID.RES_PUT_STONE);
@@ -409,17 +424,22 @@ public class PKHRoom : PKHandler
     // 다음에 둘 클라에게 응답
     void ResponseTurnChange(string sessionID, int xpos, int ypos)
     {
+        var islose =  OmokLogic.오목확인(xpos, ypos);
+        
         //상대가 둔거 알려줘야 함
         var resGameStart = new PKTResTurnChange();
         resGameStart.xPos = xpos;
         resGameStart.yPos = ypos;
+        resGameStart.isLose = islose;
         
         var sendPacket = MemoryPackSerializer.Serialize(resGameStart);
         MemoryPackPacketHeadInfo.Write(sendPacket, PACKETID.RES_TURN_CHANGE);
         
         NetSendFunc(sessionID, sendPacket);
+        
+        // 착수 시간 갱신
+        var user = _userMgr.GetUser(sessionID);
+        var room = GetRoom(user.RoomNumber);
+        room.LastPutStoneTime = DateTime.Now;
     }
-
-
-
 }

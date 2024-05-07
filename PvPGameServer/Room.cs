@@ -20,6 +20,14 @@ public class Room
     public int Index { get; private set; }
     public int Number { get; private set; }
 
+    public bool IsGameStart { get; set; }
+    //TODO 게임 시작 시 바꿔주기
+    public DateTime GameStartTime { get; set; }
+    //TODO 게임 시작 시 바꿔주기
+    public DateTime LastPutStoneTime { get; set; }
+    //TODO 돌 뒀을시 바꿔주기
+    
+
     int _maxUserCount;
     
     List<RoomUser> _userList = new List<RoomUser>();
@@ -133,7 +141,42 @@ public class Room
         }
     }
 
-
+    // 주기적으로 돌 뒀는지 체크
+    public void RoomPutStoneCheck(DateTime dateTime)
+    {
+        if (IsGameStart)
+        {
+            // 착수 30초 체크
+            var diffStoneSpan = new TimeSpan(dateTime.Ticks - LastPutStoneTime.Ticks);
+            if (diffStoneSpan.TotalSeconds > 30)
+            {
+                //TODO *** 턴 넘기기
+                //해당 유저의 turnCount++;(이거 게임 입장 시 초기화)
+                
+                //TODO ** 이건 딴데서 처리해도 될듯 
+                //if (그사람.턴 카운트>6) => 게임 종료 하면서 패배처리
+            }
+        }
+    }
+    
+    // 주기적으로 게임 지속 되었는지 체크
+    public void RoomGameCheck(DateTime dateTime)
+    {
+        if (IsGameStart)
+        {
+            // 오랜 시간 게임 지속되었는지 체크
+            var diffGameSpan = new TimeSpan(dateTime.Ticks - GameStartTime.Ticks);
+            if (diffGameSpan.TotalMinutes > 60)
+            {
+                //TODO *** 게임 무효화
+                // 게임 무효화라고 룸정보에 표시하기
+                
+                //TODO ** 이건 딴데서 처리해도 될듯 
+                //if(무효화) => 무효화 패킷 만들자 (클라 돌둔거 초기화, 클라 턴 초기화, 서버돌둔거 초기화, 게임 시작 및 기다린 사람등 초기화, 승패 건들x)
+            }
+        }
+    }
+    
 }
 
 

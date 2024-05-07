@@ -10,13 +10,15 @@ public class PKHandler
     public static Action<MemoryPackBinaryRequestInfo> DistributeInnerPacket;
 
     protected UserManager _userMgr = null;
-    
+
+    protected RoomManager _roomMgr = null;
     
 
 
-    public void Init(UserManager userMgr)
+    public void Init(UserManager userMgr, RoomManager roomManager)
     {
         this._userMgr = userMgr;
+        this._roomMgr = roomManager;
     }           
             
     

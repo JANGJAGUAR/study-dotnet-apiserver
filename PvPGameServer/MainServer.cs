@@ -10,8 +10,10 @@ using SuperSocket.SocketBase.Protocol;
 using SuperSocket.SocketBase.Config;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Timers;
 using MemoryPack;
 using PvPGameServer.CS;
+using Timer = System.Timers.Timer;
 
 namespace PvPGameServer;
 
@@ -74,35 +76,32 @@ public class MainServer : AppServer<NetworkSession, MemoryPackBinaryRequestInfo>
             _appLogger.LogError("서버 네트워크 시작 실패");
             return;
         }
-        
-        // 타이머 작동
-        var task = Task.Run(ServerTimer);
-    }
-    private async Task ServerTimer()
-    {
-        // int count = 0;
-        while (true)
-        {
-            // 주기(1초)마다 실행
-            // Console.WriteLine("Timer: " + DateTime.Now);
-            //TODO 이너 패킷 보내기
-            
-            var pktServerTimer = new PKTServerTimer();
-            pktServerTimer.dateTime = DateTime.Now;
-            
-            var sendPacket = MemoryPackSerializer.Serialize(pktServerTimer);
-            MemoryPackPacketHeadInfo.Write(sendPacket, PACKETID.NTF_IN_SERVER_TIMER);
 
-            var memoryPakcPacket = new MemoryPackBinaryRequestInfo(null);
-            memoryPakcPacket.Data = sendPacket;
-            //TODO 서버거니까 세션 id가 없음?
-            memoryPakcPacket.SessionID = "";
-            Distribute(memoryPakcPacket); 
+        Timer serverTimer;
+        serverTimer = new Timer();
+        serverTimer.Interval = _serverOpt.HeartbeatInterval;
+        serverTimer.Elapsed += ServerTimer;
+        serverTimer.AutoReset = true;
+        serverTimer.Enabled = true;
+
+    }
+    private void ServerTimer(Object source, ElapsedEventArgs e)
+    {
+        // 주기(1초)마다 실행
+        // Console.WriteLine("Timer: " + DateTime.Now);
+        //TODO 이너 패킷 보내기
             
+        var pktServerTimer = new PKTServerTimer();
+        pktServerTimer.dateTime = DateTime.Now;
             
-            // 1초 대기
-            await Task.Delay(1000);
-        }
+        var sendPacket = MemoryPackSerializer.Serialize(pktServerTimer);
+        MemoryPackPacketHeadInfo.Write(sendPacket, PACKETID.NTF_IN_SERVER_TIMER);
+            
+        var memoryPackPacket = new MemoryPackBinaryRequestInfo(null);
+        memoryPackPacket.Data = sendPacket;
+        //TODO 서버거니까 세션 id가 없음?
+        memoryPackPacket.SessionID = "";
+        Distribute(memoryPackPacket);
     }
 
     private void AppOnStopped()
@@ -178,7 +177,7 @@ public class MainServer : AppServer<NetworkSession, MemoryPackBinaryRequestInfo>
 
         _packetProcessor = new PacketProcessor();
         _packetProcessor.NetSendFunc = this.SendData;
-        _packetProcessor.CreateAndStart(_roomMgr.GetRoomsList(), serverOpt);
+        _packetProcessor.CreateAndStart(_roomMgr, serverOpt);
 
         MainLogger.Info("CreateComponent - Success");
         return ERROR_CODE.NONE;
