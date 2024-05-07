@@ -35,6 +35,7 @@ public class PKHRoom : PKHandler
         packetHandlerMap.Add((int)PACKETID.REQ_PUT_STONE, RequestPutstone);
         packetHandlerMap.Add((int)PACKETID.NTF_IN_SERVER_TIMER, NotifyServerTimer);
         packetHandlerMap.Add((int)PACKETID.REQ_HEART_BEAT, ReqHeartBeat);
+        packetHandlerMap.Add((int)PACKETID.NTF_IN_TIME_TURN_CHANGE, NotifyInternalTimeTurnChange);
     }
 
 
@@ -66,7 +67,7 @@ public class PKHRoom : PKHandler
             return (false, null, null);
         }
 
-        var roomUser = room.GetUserByNetSessionId(userNetSessionID);
+        var roomUser = room.GetRoomUserByNetSessionId(userNetSessionID);
 
         if (roomUser == null)
         {
@@ -211,7 +212,7 @@ public class PKHRoom : PKHandler
             return false;
         }
 
-        var roomUser = room.GetUserByNetSessionId(sessionID);
+        var roomUser = room.GetRoomUserByNetSessionId(sessionID);
         if (roomUser == null)
         {
             return false;
@@ -307,6 +308,7 @@ public class PKHRoom : PKHandler
             {
                 room.IsWaiting = true;
                 room.WaitingSID = sessionID;
+                //TODO 이거 나가면 초기화
             }
             else if(room.WaitingSID!=sessionID)
             {
@@ -333,12 +335,20 @@ public class PKHRoom : PKHandler
                     room.NextTurnSID = sessionID;
                 }
 
+                // 게임 초기화
+                OmokLogic.StartGame();
+                // room.WaitingSID = "";
+                room.GetRoomUserByNetSessionId(room.NowTurnSID).TurnCount = 0;
+                room.GetRoomUserByNetSessionId(room.NextTurnSID).TurnCount = 0;
+                
+
                 ResponseGameStart(ERROR_CODE.NONE, sessionID, startUserInfo.Item3.UserID);
                 ResponseGameStart(ERROR_CODE.NONE, room.WaitingSID, startUserInfo.Item3.UserID);
                 
                 // 게임 시작 시간 갱신
                 room.IsGameStart = true;
                 room.GameStartTime = DateTime.Now;
+                room.LastPutStoneTime = DateTime.Now;
                 MainServer.MainLogger.Debug("RequestGameStart - Success");
             }
         }
@@ -411,9 +421,7 @@ public class PKHRoom : PKHandler
             // 함수 처리
             var user = _userMgr.GetUser(sessionID);
             var room = GetRoom(user.RoomNumber);
-            room.IsGameStart = false;
-            room.WaitingSID = "";
-            //TODO 초기화 더 있는지 확인, 방 들어올때도 초기화, 그때랑 다름.
+            GameReset(room);
         }
         
         var sendPacket = MemoryPackSerializer.Serialize(resGameStart);
@@ -442,4 +450,63 @@ public class PKHRoom : PKHandler
         var room = GetRoom(user.RoomNumber);
         room.LastPutStoneTime = DateTime.Now;
     }
+
+    // 시간 지나서 턴 넘기기
+    void NotifyInternalTimeTurnChange(MemoryPackBinaryRequestInfo packetData)
+    {
+        var reqData = MemoryPackSerializer.Deserialize<PKTInternalNtfTimeTurnChange>(packetData.Data);
+        
+        var room = GetRoom(reqData.RoomNumber);
+        
+        // 착수 시간 갱신
+        room.LastPutStoneTime = DateTime.Now;
+        
+        var turnCount = ++room.GetRoomUserByNetSessionId(room.NowTurnSID).TurnCount;
+        if (turnCount >= 6)
+        {
+            // 6회 이상 시 턴 넘긴 플레이어 패배로 게임 종료
+            ResponseTimeEndGame(room.NowTurnSID, false);
+            ResponseTimeEndGame(room.NextTurnSID, true);
+            GameReset(room);
+        }
+        
+        ResponseTimeTurnChange(room.NowTurnSID, turnCount);
+        ResponseTimeTurnChange(room.NextTurnSID, turnCount);
+        (room.NowTurnSID, room.NextTurnSID) = (room.NextTurnSID, room.NowTurnSID);
+        
+
+    }
+    // 시간 초과로 턴 변경
+    void ResponseTimeTurnChange(string sessionID, int turnCount)
+    {
+        var resTimeTurnChange = new PKTResTimeTurnChange();
+        resTimeTurnChange.turnCount = turnCount;
+        
+        var sendPacket = MemoryPackSerializer.Serialize(resTimeTurnChange);
+        MemoryPackPacketHeadInfo.Write(sendPacket, PACKETID.RES_TIME_TURN_CHANGE);
+        
+        NetSendFunc(sessionID, sendPacket);
+
+    }
+    // 6회 시간 초과로 게임 종료
+    void ResponseTimeEndGame(string sessionID, bool isWin)
+    {
+        var resTimeEndGame = new PKTResTimeEndGame();
+        resTimeEndGame.IsWin = isWin;
+        
+        var sendPacket = MemoryPackSerializer.Serialize(resTimeEndGame);
+        MemoryPackPacketHeadInfo.Write(sendPacket, PACKETID.RES_TIME_GAME_END);
+        
+        NetSendFunc(sessionID, sendPacket);
+
+    }
+
+    void GameReset(Room room)
+    {
+        room.IsGameStart = false;
+        room.WaitingSID = "";
+        //TODO 게임 리셋 처리 (!=게임 초기화)
+        // 더 있는지 확인, 방 들어올때의 초기화와 다름
+    }
 }
+

@@ -31,10 +31,12 @@ public partial class mainForm : Form
         _packetFuncDic.Add(PACKETID.RES_GAME_START, PacketProcess_GameStartResultResponse);
         _packetFuncDic.Add(PACKETID.RES_PUT_STONE, PacketProcess_PutStoneResponse);
         _packetFuncDic.Add(PACKETID.RES_TURN_CHANGE, PacketProcess_TurnChangeResponse);
-        _packetFuncDic.Add(PACKETID.RES_PUT_STONE_INFO, PacketProcess_PutStoneInfoResponse);
-        _packetFuncDic.Add(PACKETID.RES_GAME_END, PacketProcess_GameEndResultResponse);
+        // _packetFuncDic.Add(PACKETID.RES_PUT_STONE_INFO, PacketProcess_PutStoneInfoResponse);
+        // _packetFuncDic.Add(PACKETID.RES_GAME_END, PacketProcess_GameEndResultResponse);
         _packetFuncDic.Add(PACKETID.RES_MATCH_USER, PacketProcess_MatchUserResponse);
         _packetFuncDic.Add(PACKETID.NTF_ROOM_RELAY, PacketProcess_RoomRelayNotify);
+        _packetFuncDic.Add(PACKETID.RES_TIME_TURN_CHANGE, PacketProcess_TimeTurnChangeResponse);
+        _packetFuncDic.Add(PACKETID.RES_TIME_GAME_END, PacketProcess_TimeGameEndResponse);
 
     }
 
@@ -191,11 +193,17 @@ public partial class mainForm : Form
         else
         {
             착수(responsePkt.xPos, responsePkt.yPos);
-            DevLog.Write($"착수 완료"); //TODO 자연스러워지면 빼기
+            if (responsePkt.isWin)
+            {
+                var 승리색깔 = 플레이어흑돌?"흑":"백";
+                DevLog.Write($"게임 종료 : 당신이 이겼습니다, "+승리색깔+" 승리");
+                // 둘차례 = false;
+            }
+            else
+            {
+                DevLog.Write($"착수 완료");  
+            }
         }
-        
-        
-
     }
     
     // 턴 넘어온 후 기록
@@ -204,26 +212,63 @@ public partial class mainForm : Form
         var responsePkt = MemoryPackSerializer.Deserialize<PKTResTurnChange>(packetData);
         
         착수(responsePkt.xPos, responsePkt.yPos);
-        DevLog.Write($"당신의 차례");
+        
+        if (responsePkt.isLose)
+        {
+            var 승리색깔 = 플레이어흑돌?"백":"흑";
+            DevLog.Write($"게임 종료 : 당신이 졌습니다, "+승리색깔+" 승리");
+            둘차례 = false;
+        }
+        else
+        {
+            DevLog.Write($"당신의 차례");   
+        }
 
     }
     
-    // 돌 두기 후 둔 자리 알림 응답 기록
-    void PacketProcess_PutStoneInfoResponse(byte[] packetData)
+    // 시간 초과로 턴 넘어온 것 기록
+    void PacketProcess_TimeTurnChangeResponse(byte[] packetData)
     {
-        var responsePkt = MemoryPackSerializer.Deserialize<PKTResPutStoneInfo>(packetData);
-        돌존재(responsePkt.xPos, responsePkt.yPos);
-        DevLog.Write($"'{responsePkt.userID}' Put Stone  : [{responsePkt.xPos}] , [{responsePkt.yPos}] ");
+        // 턴 변경 알림 메시지 + 턴 변경 처리
+        var responsePkt = MemoryPackSerializer.Deserialize<PKTResTimeTurnChange>(packetData);
+        둘차례 = !둘차례;
+        DevLog.Write($"30초가 지나 턴을 바꿉니다, "+responsePkt.turnCount+"회 경고");
+    }
 
+    void PacketProcess_TimeGameEndResponse(byte[] packetData)
+    {
+        //게임 종료 알림 메시지
+        var responsePkt = MemoryPackSerializer.Deserialize<PKTResTimeEndGame>(packetData);
+        if (responsePkt.IsWin)
+        {
+            DevLog.Write($"상대방의 시간 초과로 당신이 승리했습니다.");
+        }
+        else
+        {
+            DevLog.Write($"당신의 시간 초과로 패배했습니다.");
+            둘차례 = false;
+        }
+        
     }
     
-    // 게임 종료 후 승리플레이어 응답 기록
-    void PacketProcess_GameEndResultResponse(byte[] packetData)
-    {
-        var responsePkt = MemoryPackSerializer.Deserialize<PKTResGameEnd>(packetData);
-        DevLog.Write($"'{responsePkt.WinID}' WIN , END GAME ");
-
-    }
+    
+    
+    // // 돌 두기 후 둔 자리 알림 응답 기록
+    // void PacketProcess_PutStoneInfoResponse(byte[] packetData)
+    // {
+    //     var responsePkt = MemoryPackSerializer.Deserialize<PKTResPutStoneInfo>(packetData);
+    //     돌존재(responsePkt.xPos, responsePkt.yPos);
+    //     DevLog.Write($"'{responsePkt.userID}' Put Stone  : [{responsePkt.xPos}] , [{responsePkt.yPos}] ");
+    //
+    // }
+    
+    // // 게임 종료 후 승리플레이어 응답 기록
+    // void PacketProcess_GameEndResultResponse(byte[] packetData)
+    // {
+    //     var responsePkt = MemoryPackSerializer.Deserialize<PKTResGameEnd>(packetData);
+    //     DevLog.Write($"'{responsePkt.WinID}' WIN , END GAME ");
+    //
+    // }
     
     //TODO (6주차) 매칭서버
     void PacketProcess_MatchUserResponse(byte[] packetData)

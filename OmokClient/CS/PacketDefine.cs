@@ -56,7 +56,10 @@ public enum PACKETID : int                 // ushort
     
     RES_TURN_CHANGE = 1061,
     
+    RES_TIME_TURN_CHANGE = 1063,
+
     RES_GAME_END = 1071,
+    RES_TIME_GAME_END = 1072,
     
     RES_MATCH_USER = 1081,
    
@@ -77,6 +80,8 @@ public enum PACKETID : int                 // ushort
     RES_IN_ROOM_ENTER = 8032,
 
     NTF_IN_ROOM_LEAVE = 8036,
+    
+    NTF_IN_TIME_TURN_CHANGE = 8062,
     
     NTF_IN_SERVER_TIMER = 8080,
     

@@ -173,6 +173,8 @@ public class MainServer : AppServer<NetworkSession, MemoryPackBinaryRequestInfo>
     public ERROR_CODE CreateComponent(ServerOption serverOpt)
     {
         Room.NetSendFunc = this.SendData;
+        // Room에서 이너 패킷 쓸 수 있도록 하는 장치
+        Room.DistributeInnerPacket = this.SendInnerData;
         _roomMgr.CreateRooms(serverOpt);
 
         _packetProcessor = new PacketProcessor();
@@ -183,6 +185,12 @@ public class MainServer : AppServer<NetworkSession, MemoryPackBinaryRequestInfo>
         return ERROR_CODE.NONE;
     }
 
+    // Room에서 이너 패킷 쓸 수 있도록 하는 장치
+    public void SendInnerData(MemoryPackBinaryRequestInfo requestPacket)
+    {
+        Distribute(requestPacket);
+    }
+    
     public bool SendData(string sessionID, byte[] sendData)
     {
         var session = GetSessionByID(sessionID);

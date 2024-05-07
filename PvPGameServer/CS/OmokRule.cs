@@ -141,7 +141,7 @@ namespace PvPGameServer.CS
         }
 
 
-        public void 오목확인(int x, int y)
+        public bool 오목확인(int x, int y)
         {
             if (가로확인(x, y) == 5)        // 같은 돌 개수가 5개면 (6목이상이면 게임 계속) 
             {
@@ -170,6 +170,8 @@ namespace PvPGameServer.CS
                 //MessageBox.Show((돌종류)바둑판[x, y] + " 승");
                 게임종료 = true;
             }
+
+            return 게임종료;
         }
 
         int 가로확인(int x, int y)      // ㅡ 확인

@@ -9,17 +9,21 @@ namespace PvPGameServer;
 
 public class Room
 {
+    public static Action<MemoryPackBinaryRequestInfo> DistributeInnerPacket;
     public const int InvalidRoomNumber = -1;
 
 
     public bool IsWaiting { get; set; } = false;
     public string WaitingSID { get; set; }
     
-    public string NowTurnSID { get; set; }
-    public string NextTurnSID { get; set; }
+    
+    
     public int Index { get; private set; }
     public int Number { get; private set; }
-
+    
+    //[게임 관련]
+    public string NowTurnSID { get; set; }
+    public string NextTurnSID { get; set; }
     public bool IsGameStart { get; set; }
     //TODO 게임 시작 시 바꿔주기
     public DateTime GameStartTime { get; set; }
@@ -30,8 +34,9 @@ public class Room
 
     int _maxUserCount;
     
-    List<RoomUser> _userList = new List<RoomUser>();
-
+    List<RoomUser> _roomUserList = new List<RoomUser>();
+    // TODO 얘는 풀링 안해도 되나 
+    
     public static Func<string, byte[], bool> NetSendFunc;
 
 
@@ -45,52 +50,52 @@ public class Room
     public bool AddUser(string userID, string netSessionID)
     {
         // 이미 이id가 있으면
-        if(GetUser(userID) != null)
+        if(GetRoomUser(userID) != null)
         {
             return false;
         }
 
         var roomUser = new RoomUser();
         roomUser.Set(userID, netSessionID);
-        _userList.Add(roomUser);
+        _roomUserList.Add(roomUser);
 
         return true;
     }
 
     public void RemoveUser(string netSessionID)
     {
-        var index = _userList.FindIndex(x => x.NetSessionID == netSessionID);
-        _userList.RemoveAt(index);
+        var index = _roomUserList.FindIndex(x => x.NetSessionID == netSessionID);
+        _roomUserList.RemoveAt(index);
     }
 
     
     public bool RemoveUser(RoomUser user)
     {
-        return _userList.Remove(user);
+        return _roomUserList.Remove(user);
     }
 
     // id로 유저 찾아서 출력
-    public RoomUser GetUser(string userID)
+    public RoomUser GetRoomUser(string userID)
     {
-        return _userList.Find(x => x.UserID == userID);
+        return _roomUserList.Find(x => x.UserID == userID);
     }
 
     // 세션 id로 유저 찾아서 출력
-    public RoomUser GetUserByNetSessionId(string netSessionID)
+    public RoomUser GetRoomUserByNetSessionId(string netSessionID)
     {
-        return _userList.Find(x => x.NetSessionID == netSessionID);
+        return _roomUserList.Find(x => x.NetSessionID == netSessionID);
     }
 
     // 유저 인원 수 출력 
     public int CurrentUserCount()
     {
-        return _userList.Count();
+        return _roomUserList.Count();
     }
 
     public void NotifyPacketUserList(string userNetSessionID)
     {
         var packet = new PKTNtfRoomUserList();
-        foreach (var user in _userList)
+        foreach (var user in _roomUserList)
         {
             packet.UserIDList.Add(user.UserID);
         }
@@ -130,7 +135,7 @@ public class Room
 
     public void Broadcast(string excludeNetSessionID, byte[] sendPacket)
     {
-        foreach(var user in _userList)
+        foreach(var user in _roomUserList)
         {
             if(user.NetSessionID == excludeNetSessionID)
             {
@@ -150,11 +155,8 @@ public class Room
             var diffStoneSpan = new TimeSpan(dateTime.Ticks - LastPutStoneTime.Ticks);
             if (diffStoneSpan.TotalSeconds > 30)
             {
-                //TODO *** 턴 넘기기
-                //해당 유저의 turnCount++;(이거 게임 입장 시 초기화)
-                
-                //TODO ** 이건 딴데서 처리해도 될듯 
-                //if (그사람.턴 카운트>6) => 게임 종료 하면서 패배처리
+                var internalPacket = InnerPakcetMaker.MakeNTFInnerTimeTurnChange(Number);                
+                DistributeInnerPacket(internalPacket);
             }
         }
     }
@@ -184,6 +186,9 @@ public class RoomUser
 {
     public string UserID { get; private set; }
     public string NetSessionID { get; private set; }
+    
+    public int TurnCount { get; set; }
+    //TODO 초기화 필요
 
     public void Set(string userID, string netSessionID)
     {

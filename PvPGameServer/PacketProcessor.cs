@@ -31,7 +31,7 @@ class PacketProcessor
     PKHRoom _roomPacketHandler = new PKHRoom();
             
 
-    public void CreateAndStart(RoomManager roomMgr, ServerOption serverOpt)// List<Room> roomList
+    public void CreateAndStart(RoomManager roomMgr, ServerOption serverOpt) // List<Room> roomList
     {
         var maxUserCount = serverOpt.RoomMaxCount * serverOpt.RoomMaxUserCount;
         _userMgr.Init(maxUserCount, serverOpt.UserCheckMaxCount);
@@ -74,6 +74,8 @@ class PacketProcessor
     {
         PKHandler.NetSendFunc = NetSendFunc;
         PKHandler.DistributeInnerPacket = InsertPacket;
+        
+        
         _commonPacketHandler.Init(_userMgr, _roomMgr);
         _commonPacketHandler.RegistPacketHandler(_packetHandlerMap);                
         

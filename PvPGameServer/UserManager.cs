@@ -94,14 +94,6 @@ public class UserManager
         return _maxUserCount <= _userMap.Count();
     }
 
-    
-    //         var diffSpan = new TimeSpan(user.Value.LastAccessTime.Ticks - dateTime.Ticks);
-    //         if (diffSpan.TotalSeconds is > 10 or < -10)
-    //         {
-    //             RemoveUser(sessionid);
-    //         }
-    // }
-    
     public void CheckUserList()
     {
         //끝 설정
@@ -122,7 +114,8 @@ public class UserManager
             if (diffStoneSpan.TotalSeconds > 10)
             {
                 //TODO 세션 ID를 public 에 get set 으로 둬도 괜찮은가
-                RemoveUser(checkUser.SessionID);
+                //TODO ***** 이거 왜 오류
+                // RemoveUser(checkUser.SessionID);
             }
         }
         
@@ -135,56 +128,5 @@ public class UserManager
     }
 }
 
-public class User
-{
-    UInt64 SequenceNumber = 0;
-    public string SessionID { get; set; } 
-    
-    
-   
-    public int RoomNumber { get; private set; } = -1;
-    string UserID;
 
-    public int UserListIdx { get; set; }
-
-    public DateTime LastAccessTime { get; set; }
-            
-    public void Set(UInt64 sequence, string sessionID, string userID, DateTime lastAccessTime)
-    {
-        SequenceNumber = sequence;
-        SessionID = sessionID;
-        UserID = userID;
-        LastAccessTime = lastAccessTime;
-    }                   
-    
-    public bool IsConfirm(string netSessionID)
-    {
-        return SessionID == netSessionID;
-    }
-
-    public string ID()
-    {
-        return UserID;
-    }
-
-    public void EnteredRoom(int roomNumber)
-    {
-        RoomNumber = roomNumber;
-    }
-
-    public void LeaveRoom()
-    {
-        RoomNumber = -1;
-    }
-
-    public bool IsStateLogin() { return SequenceNumber != 0; }
-
-    // 방 번호 -1이면 true
-    public bool IsStateRoom() { return RoomNumber != -1; }
-
-    public void UserConnectCheck(DateTime dateTime)
-    {
-        
-    }
-}
 

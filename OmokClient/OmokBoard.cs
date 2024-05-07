@@ -266,15 +266,18 @@ namespace OmokClient
             // 차례 변경
             둘차례 = !둘차례;
             
+            //해당 좌표 착수 후 못 두게 가리기
+            st.Push(new Point(x, y));
+            Rectangle r = new Rectangle(시작위치, 590, 시작위치 + 돌크기 + 160, 돌크기 + 10);
+            panel1.Invalidate(r);
+            
         }
         
 
         void 돌존재(int x, int y)
         {
-            //해당 좌표 착수 후 못 두게 가리기 
-            st.Push(new Point(x, y));
-            Rectangle r = new Rectangle(시작위치, 590, 시작위치 + 돌크기 + 160, 돌크기 + 10);
-            panel1.Invalidate(r);
+             
+            
         }
 
         private void panel1_MouseDown(object sender, MouseEventArgs e)

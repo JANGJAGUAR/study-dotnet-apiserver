@@ -219,6 +219,7 @@ public partial class PKTResPutStone : PkHeader
     public ERROR_CODE isAble { get; set; }
     public int xPos { get; set; }
     public int yPos { get; set; }
+    public bool isWin { get; set; }
 }
 
 // 턴 넘기기 응답 (다음 사람에게 할 수 있다고 반환)
@@ -227,6 +228,7 @@ public partial class PKTResTurnChange : PkHeader
 {
     public int xPos { get; set; }
     public int yPos { get; set; }
+    public bool isLose { get; set; }
 }
 
 // 돌 두기 후 좌표 알림 (둔 사람과 좌표를 둘다에게 공지)
@@ -258,6 +260,21 @@ public partial class PKTClientHeartBeat : PkHeader
 {
     public DateTime dateTime { get; set; }
 }
+
+// 시간 지속 시 턴 넘기기 (턴 넘긴 횟수 반환)
+[MemoryPackable]
+public partial class PKTResTimeTurnChange : PkHeader
+{
+    public int turnCount { get; set; }
+}
+
+// 시간 초과로 게임 종료 (이겼는지 졌는지 반환)
+[MemoryPackable]
+public partial class PKTResTimeEndGame : PkHeader
+{
+    public bool IsWin { get; set; }
+}
+
 
 
 // // 게임 시작 알림 (id 공지)
