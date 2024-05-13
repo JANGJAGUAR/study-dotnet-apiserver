@@ -26,6 +26,7 @@ SuperSocketLite 연습
 | 게임 종료								        | ✅        |        |
 | heartbeat								       | ✅        |        |
 | 방 검사	  							        | ✅        |        |
+| API 서버 연결  		        |           | 5/12   |
 | 매칭 서버	(API)		        |           | 5/12   |
 
 
