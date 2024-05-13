@@ -141,11 +141,11 @@
             // textBoxIP
             // 
             this.textBoxIP.Location = new System.Drawing.Point(68, 18);
-            this.textBoxIP.MaxLength = 6;
+            this.textBoxIP.MaxLength = 30;
             this.textBoxIP.Name = "textBoxIP";
             this.textBoxIP.Size = new System.Drawing.Size(87, 21);
             this.textBoxIP.TabIndex = 11;
-            this.textBoxIP.Text = "0.0.0.0";
+            this.textBoxIP.Text = "34.47.102.84";
             this.textBoxIP.WordWrap = false;
             // 
             // label9
