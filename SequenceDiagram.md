@@ -5,9 +5,15 @@ sequenceDiagram
     participant B as Hive Server
     participant C as Hive MySQL DB
     participant D as Hive Redis DB
-    participant E as Game Server
-    participant F as Game MySQL DB
-    participant G as Game Redis DB
+
+    participant E as API Server
+    participant F as API MySQL DB
+    participant G as API Redis DB
+
+    participant H as Matching Server
+    participant I as Matching Redis DB
+
+    participant J as Socket Server
 
     loop 첫로그인
         A->>B: Hive서버 첫로그인 시도 
