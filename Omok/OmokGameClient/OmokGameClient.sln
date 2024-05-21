@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OmokGameClient", "OmokGameClient\OmokGameClient.csproj", "{65EB7C40-E2C0-473E-BCFE-EF703DE2E6AF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OmokShareProject", "..\OmokShareProject\OmokShareProject\OmokShareProject.csproj", "{2AD70475-7362-45AE-8A5D-EE593218F0D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{65EB7C40-E2C0-473E-BCFE-EF703DE2E6AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65EB7C40-E2C0-473E-BCFE-EF703DE2E6AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65EB7C40-E2C0-473E-BCFE-EF703DE2E6AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AD70475-7362-45AE-8A5D-EE593218F0D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AD70475-7362-45AE-8A5D-EE593218F0D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AD70475-7362-45AE-8A5D-EE593218F0D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AD70475-7362-45AE-8A5D-EE593218F0D3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

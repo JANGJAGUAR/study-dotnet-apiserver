@@ -41,14 +41,6 @@ partial class OmokClient
         PW_Text = new Label();
         PW_Label = new TextBox();
         OmokBoard = new Panel();
-        Server_Box = new GroupBox();
-        Port_Label = new TextBox();
-        Localhost_Check = new CheckBox();
-        Disconnect_Btn = new Button();
-        Connect_Btn = new Button();
-        IP_Label = new TextBox();
-        Port_Text = new Label();
-        IP_Text = new Label();
         Room_Box = new GroupBox();
         Chat_List = new ListBox();
         User_List = new ListBox();
@@ -59,6 +51,7 @@ partial class OmokClient
         Log_box = new GroupBox();
         Log_List = new ListBox();
         Game_Box = new GroupBox();
+        Matching_Btn = new Button();
         Surrender_Btn = new Button();
         Back_Btn = new Button();
         Ready_Btn = new Button();
@@ -78,17 +71,23 @@ partial class OmokClient
         EnemyWin_Label = new TextBox();
         EnemyNickname_Label = new TextBox();
         Enemy_Panel = new Panel();
-        Matching_Btn = new Button();
         PlayerColor_Label = new TextBox();
         EnemyColor_Label = new TextBox();
+        Ranking_Box = new GroupBox();
+        Ranking_Btn = new Button();
+        Friend_Box = new GroupBox();
+        FriendAdd_Btn = new Button();
+        Friend_Label = new TextBox();
+        FriendList_Btn = new Button();
         Attendance_Btn = new Button();
         Inventory_Btn = new Button();
         Login_Box.SuspendLayout();
-        Server_Box.SuspendLayout();
         Room_Box.SuspendLayout();
         Log_box.SuspendLayout();
         Game_Box.SuspendLayout();
         Reward_Box.SuspendLayout();
+        Ranking_Box.SuspendLayout();
+        Friend_Box.SuspendLayout();
         SuspendLayout();
         // 
         // Attendance_Btn
@@ -128,7 +127,7 @@ partial class OmokClient
         Login_Box.Controls.Add(PW_Text);
         Login_Box.Controls.Add(PW_Label);
         Login_Box.Controls.Add(ID_Text);
-        Login_Box.Location = new Point(12, 184);
+        Login_Box.Location = new Point(12, 12);
         Login_Box.Name = "Login_Box";
         Login_Box.Size = new Size(382, 176);
         Login_Box.TabIndex = 2;
@@ -204,84 +203,6 @@ partial class OmokClient
         OmokBoard.TabIndex = 3;
         OmokBoard.Paint += panel1_Paint;
         // 
-        // Server_Box
-        // 
-        Server_Box.Controls.Add(Port_Label);
-        Server_Box.Controls.Add(Localhost_Check);
-        Server_Box.Controls.Add(Disconnect_Btn);
-        Server_Box.Controls.Add(Connect_Btn);
-        Server_Box.Controls.Add(IP_Label);
-        Server_Box.Controls.Add(Port_Text);
-        Server_Box.Controls.Add(IP_Text);
-        Server_Box.Location = new Point(13, 13);
-        Server_Box.Name = "Server_Box";
-        Server_Box.Size = new Size(381, 166);
-        Server_Box.TabIndex = 9;
-        Server_Box.TabStop = false;
-        Server_Box.Text = "Server";
-        // 
-        // Port_Label
-        // 
-        Port_Label.Location = new Point(110, 115);
-        Port_Label.Name = "Port_Label";
-        Port_Label.Size = new Size(125, 27);
-        Port_Label.TabIndex = 9;
-        // 
-        // Localhost_Check
-        // 
-        Localhost_Check.AutoSize = true;
-        Localhost_Check.Location = new Point(111, 65);
-        Localhost_Check.Name = "Localhost_Check";
-        Localhost_Check.Size = new Size(92, 24);
-        Localhost_Check.TabIndex = 10;
-        Localhost_Check.Text = "localhost";
-        Localhost_Check.UseVisualStyleBackColor = true;
-        // 
-        // Disconnect_Btn
-        // 
-        Disconnect_Btn.Location = new Point(267, 112);
-        Disconnect_Btn.Name = "Disconnect_Btn";
-        Disconnect_Btn.Size = new Size(81, 27);
-        Disconnect_Btn.TabIndex = 6;
-        Disconnect_Btn.Text = "연결끊기";
-        Disconnect_Btn.UseVisualStyleBackColor = true;
-        Disconnect_Btn.Click += Disconnect_Btn_Click;
-        // 
-        // Connect_Btn
-        // 
-        Connect_Btn.Location = new Point(267, 32);
-        Connect_Btn.Name = "Connect_Btn";
-        Connect_Btn.Size = new Size(81, 27);
-        Connect_Btn.TabIndex = 5;
-        Connect_Btn.Text = "연결하기";
-        Connect_Btn.UseVisualStyleBackColor = true;
-        Connect_Btn.Click += Connect_Btn_Click;
-        // 
-        // IP_Label
-        // 
-        IP_Label.Location = new Point(111, 32);
-        IP_Label.Name = "IP_Label";
-        IP_Label.Size = new Size(125, 27);
-        IP_Label.TabIndex = 4;
-        // 
-        // Port_Text
-        // 
-        Port_Text.AutoSize = true;
-        Port_Text.Location = new Point(35, 115);
-        Port_Text.Name = "Port_Text";
-        Port_Text.Size = new Size(37, 20);
-        Port_Text.TabIndex = 3;
-        Port_Text.Text = "Port";
-        // 
-        // IP_Text
-        // 
-        IP_Text.AutoSize = true;
-        IP_Text.Location = new Point(44, 35);
-        IP_Text.Name = "IP_Text";
-        IP_Text.Size = new Size(22, 20);
-        IP_Text.TabIndex = 0;
-        IP_Text.Text = "IP";
-        // 
         // Room_Box
         // 
         Room_Box.Controls.Add(Chat_List);
@@ -352,7 +273,7 @@ partial class OmokClient
         Log_box.Controls.Add(Log_List);
         Log_box.Location = new Point(1206, 328);
         Log_box.Name = "Log_box";
-        Log_box.Size = new Size(364, 241);
+        Log_box.Size = new Size(364, 258);
         Log_box.TabIndex = 11;
         Log_box.TabStop = false;
         Log_box.Text = "Log";
@@ -362,7 +283,7 @@ partial class OmokClient
         Log_List.FormattingEnabled = true;
         Log_List.Location = new Point(6, 26);
         Log_List.Name = "Log_List";
-        Log_List.Size = new Size(352, 204);
+        Log_List.Size = new Size(352, 224);
         Log_List.TabIndex = 11;
         // 
         // Game_Box
@@ -371,12 +292,24 @@ partial class OmokClient
         Game_Box.Controls.Add(Surrender_Btn);
         Game_Box.Controls.Add(Back_Btn);
         Game_Box.Controls.Add(Ready_Btn);
-        Game_Box.Location = new Point(12, 451);
+        Game_Box.Location = new Point(12, 449);
         Game_Box.Name = "Game_Box";
         Game_Box.Size = new Size(382, 137);
         Game_Box.TabIndex = 12;
         Game_Box.TabStop = false;
         Game_Box.Text = "Game";
+        // 
+        // Matching_Btn
+        // 
+        Matching_Btn.BackColor = SystemColors.GradientActiveCaption;
+        Matching_Btn.FlatAppearance.BorderColor = Color.FromArgb(255, 192, 192);
+        Matching_Btn.Location = new Point(31, 36);
+        Matching_Btn.Name = "Matching_Btn";
+        Matching_Btn.Size = new Size(156, 38);
+        Matching_Btn.TabIndex = 9;
+        Matching_Btn.Text = "매칭 상대 찾기";
+        Matching_Btn.UseVisualStyleBackColor = false;
+        Matching_Btn.Click += Matching_Btn_Click;
         // 
         // Surrender_Btn
         // 
@@ -415,7 +348,7 @@ partial class OmokClient
         Reward_Box.Controls.Add(Inventory_Btn);
         Reward_Box.Controls.Add(MailBox_Btn);
         Reward_Box.Controls.Add(Attendance_Btn);
-        Reward_Box.Location = new Point(12, 366);
+        Reward_Box.Location = new Point(12, 279);
         Reward_Box.Name = "Reward_Box";
         Reward_Box.Size = new Size(382, 79);
         Reward_Box.TabIndex = 13;
@@ -550,18 +483,6 @@ partial class OmokClient
         Enemy_Panel.Size = new Size(128, 128);
         Enemy_Panel.TabIndex = 26;
         // 
-        // Matching_Btn
-        // 
-        Matching_Btn.BackColor = SystemColors.GradientActiveCaption;
-        Matching_Btn.FlatAppearance.BorderColor = Color.FromArgb(255, 192, 192);
-        Matching_Btn.Location = new Point(31, 36);
-        Matching_Btn.Name = "Matching_Btn";
-        Matching_Btn.Size = new Size(156, 38);
-        Matching_Btn.TabIndex = 9;
-        Matching_Btn.Text = "매칭 상대 찾기";
-        Matching_Btn.UseVisualStyleBackColor = false;
-        Matching_Btn.Click += Matching_Btn_Click;
-        // 
         // PlayerColor_Label
         // 
         PlayerColor_Label.Font = new Font("맑은 고딕", 24F, FontStyle.Bold, GraphicsUnit.Point, 129);
@@ -580,11 +501,69 @@ partial class OmokClient
         EnemyColor_Label.Size = new Size(52, 61);
         EnemyColor_Label.TabIndex = 34;
         // 
+        // Ranking_Box
+        // 
+        Ranking_Box.Controls.Add(Ranking_Btn);
+        Ranking_Box.Location = new Point(12, 364);
+        Ranking_Box.Name = "Ranking_Box";
+        Ranking_Box.Size = new Size(382, 79);
+        Ranking_Box.TabIndex = 14;
+        Ranking_Box.TabStop = false;
+        Ranking_Box.Text = "Ranking";
+        // 
+        // Ranking_Btn
+        // 
+        Ranking_Btn.Location = new Point(31, 26);
+        Ranking_Btn.Name = "Ranking_Btn";
+        Ranking_Btn.Size = new Size(318, 38);
+        Ranking_Btn.TabIndex = 8;
+        Ranking_Btn.Text = "랭킹";
+        Ranking_Btn.UseVisualStyleBackColor = true;
+        // 
+        // Friend_Box
+        // 
+        Friend_Box.Controls.Add(FriendAdd_Btn);
+        Friend_Box.Controls.Add(Friend_Label);
+        Friend_Box.Controls.Add(FriendList_Btn);
+        Friend_Box.Location = new Point(12, 194);
+        Friend_Box.Name = "Friend_Box";
+        Friend_Box.Size = new Size(382, 79);
+        Friend_Box.TabIndex = 15;
+        Friend_Box.TabStop = false;
+        Friend_Box.Text = "Friends";
+        // 
+        // FriendAdd_Btn
+        // 
+        FriendAdd_Btn.Location = new Point(181, 26);
+        FriendAdd_Btn.Name = "FriendAdd_Btn";
+        FriendAdd_Btn.Size = new Size(81, 38);
+        FriendAdd_Btn.TabIndex = 10;
+        FriendAdd_Btn.Text = "추가";
+        FriendAdd_Btn.UseVisualStyleBackColor = true;
+        // 
+        // Friend_Label
+        // 
+        Friend_Label.Location = new Point(31, 32);
+        Friend_Label.Name = "Friend_Label";
+        Friend_Label.Size = new Size(144, 27);
+        Friend_Label.TabIndex = 9;
+        // 
+        // FriendList_Btn
+        // 
+        FriendList_Btn.Location = new Point(268, 26);
+        FriendList_Btn.Name = "FriendList_Btn";
+        FriendList_Btn.Size = new Size(81, 38);
+        FriendList_Btn.TabIndex = 8;
+        FriendList_Btn.Text = "목록";
+        FriendList_Btn.UseVisualStyleBackColor = true;
+        // 
         // OmokClient
         // 
         AutoScaleDimensions = new SizeF(9F, 20F);
         AutoScaleMode = AutoScaleMode.Font;
         ClientSize = new Size(1582, 853);
+        Controls.Add(Ranking_Box);
+        Controls.Add(Friend_Box);
         Controls.Add(EnemyColor_Label);
         Controls.Add(PlayerColor_Label);
         Controls.Add(EnemyTime_Label);
@@ -605,7 +584,6 @@ partial class OmokClient
         Controls.Add(Game_Box);
         Controls.Add(Log_box);
         Controls.Add(Room_Box);
-        Controls.Add(Server_Box);
         Controls.Add(OmokBoard);
         Controls.Add(Login_Box);
         Name = "OmokClient";
@@ -613,13 +591,14 @@ partial class OmokClient
         Load += mainForm_Load;
         Login_Box.ResumeLayout(false);
         Login_Box.PerformLayout();
-        Server_Box.ResumeLayout(false);
-        Server_Box.PerformLayout();
         Room_Box.ResumeLayout(false);
         Room_Box.PerformLayout();
         Log_box.ResumeLayout(false);
         Game_Box.ResumeLayout(false);
         Reward_Box.ResumeLayout(false);
+        Ranking_Box.ResumeLayout(false);
+        Friend_Box.ResumeLayout(false);
+        Friend_Box.PerformLayout();
         ResumeLayout(false);
         PerformLayout();
     }
@@ -636,13 +615,6 @@ partial class OmokClient
     private Button Signup_Btn;
     private Label Token_Text;
     private TextBox Token_Label;
-    private GroupBox Server_Box;
-    private Button Disconnect_Btn;
-    private Button Connect_Btn;
-    private TextBox IP_Label;
-    private Label Port_Text;
-    private Label IP_Text;
-    private CheckBox Localhost_Check;
     private GroupBox Room_Box;
     private TextBox RoomNo_Label;
     private Label RoomNo_Text;
@@ -672,8 +644,13 @@ partial class OmokClient
     private TextBox EnemyWin_Label;
     private TextBox EnemyNickname_Label;
     private Panel Enemy_Panel;
-    private TextBox Port_Label;
     private Button Matching_Btn;
     private TextBox PlayerColor_Label;
     private TextBox EnemyColor_Label;
+    private GroupBox Ranking_Box;
+    private Button Ranking_Btn;
+    private GroupBox Friend_Box;
+    private Button FriendAdd_Btn;
+    private TextBox Friend_Label;
+    private Button FriendList_Btn;
 }

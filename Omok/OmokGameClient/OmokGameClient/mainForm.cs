@@ -1,4 +1,4 @@
-using OmokGameClient.CS;
+using OmokShareProject;
 
 namespace OmokGameClient;
 
@@ -27,6 +27,8 @@ public partial class OmokClient : Form
     private void mainForm_Load(object sender, EventArgs e)
     {
         
+        
+        
         // PacketBuffer.Init((8096 * 10), MemoryPackPacketHeadInfo.HeadSize, 2048);
         //
         // IsNetworkThreadRunning = true;
@@ -47,22 +49,13 @@ public partial class OmokClient : Form
     {
 
     }
-
     private void Signup_Btn_Click(object sender, EventArgs e)
     {
-
+        _apiService.SignupApiServer(ID_Label.Text, PW_Label.Text);
     }
     private void Login_Btn_Click(object sender, EventArgs e)
     {
-        
-    }
-    private void Connect_Btn_Click(object sender, EventArgs e)
-    {
-
-    }
-    private void Disconnect_Btn_Click(object sender, EventArgs e)
-    {
-
+        _apiService.LoginApiServer(ID_Label.Text, PW_Label.Text);
     }
     private void Back_Btn_Click(object sender, EventArgs e)
     {
@@ -89,9 +82,4 @@ public partial class OmokClient : Form
     {
 
     }
-}
-public class ErrorCodeDTO
-{
-    public ErrorCode Result { get; set; } = ErrorCode.None;
-    public string AuthToken { get; set; } = "";
 }

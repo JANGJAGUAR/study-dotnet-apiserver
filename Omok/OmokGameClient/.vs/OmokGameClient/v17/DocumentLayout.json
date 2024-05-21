@@ -3,11 +3,11 @@
   "WorkspaceRootPath": "D:\\Computer\\Development\\Game\\Server\\com2us\\Omok\\OmokGameClient\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{65EB7C40-E2C0-473E-BCFE-EF703DE2E6AF}|OmokGameClient\\OmokGameClient.csproj|D:\\Computer\\Development\\Game\\Server\\com2us\\Omok\\OmokGameClient\\omokgameclient\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{65EB7C40-E2C0-473E-BCFE-EF703DE2E6AF}|OmokGameClient\\OmokGameClient.csproj|d:\\computer\\development\\game\\server\\com2us\\omok\\omokgameclient\\omokgameclient\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{65EB7C40-E2C0-473E-BCFE-EF703DE2E6AF}|OmokGameClient\\OmokGameClient.csproj|solutionrelative:omokgameclient\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{65EB7C40-E2C0-473E-BCFE-EF703DE2E6AF}|OmokGameClient\\OmokGameClient.csproj|d:\\computer\\development\\game\\server\\com2us\\omok\\omokgameclient\\omokgameclient\\mainform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{65EB7C40-E2C0-473E-BCFE-EF703DE2E6AF}|OmokGameClient\\OmokGameClient.csproj|D:\\Computer\\Development\\Game\\Server\\com2us\\Omok\\OmokGameClient\\omokgameclient\\mainform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{65EB7C40-E2C0-473E-BCFE-EF703DE2E6AF}|OmokGameClient\\OmokGameClient.csproj|solutionrelative:omokgameclient\\mainform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -34,8 +34,8 @@
               "Title": "mainForm.cs [\uB514\uC790\uC778]",
               "DocumentMoniker": "D:\\Computer\\Development\\Game\\Server\\com2us\\Omok\\OmokGameClient\\OmokGameClient\\mainForm.cs",
               "RelativeDocumentMoniker": "OmokGameClient\\mainForm.cs",
-              "ToolTip": "D:\\Computer\\Development\\Game\\Server\\com2us\\Omok\\OmokGameClient\\OmokGameClient\\mainForm.cs [\uB514\uC790\uC778]*",
-              "RelativeToolTip": "OmokGameClient\\mainForm.cs [\uB514\uC790\uC778]*",
+              "ToolTip": "D:\\Computer\\Development\\Game\\Server\\com2us\\Omok\\OmokGameClient\\OmokGameClient\\mainForm.cs [\uB514\uC790\uC778]",
+              "RelativeToolTip": "OmokGameClient\\mainForm.cs [\uB514\uC790\uC778]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-05-19T07:30:54.671Z",
               "EditorCaption": " [\uB514\uC790\uC778]"
@@ -50,8 +50,7 @@
               "RelativeToolTip": "OmokGameClient\\Program.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-05-19T06:00:53.273Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-05-19T06:00:53.273Z"
             },
             {
               "$type": "Document",
@@ -63,8 +62,7 @@
               "RelativeToolTip": "OmokGameClient\\mainForm.cs*",
               "ViewState": "AQIAADQAAAAAAAAAAAAjwEAAAAAeAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-05-19T05:58:42.258Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-05-19T05:58:42.258Z"
             },
             {
               "$type": "Document",
@@ -72,8 +70,8 @@
               "Title": "mainForm.Designer.cs",
               "DocumentMoniker": "D:\\Computer\\Development\\Game\\Server\\com2us\\Omok\\OmokGameClient\\OmokGameClient\\mainForm.Designer.cs",
               "RelativeDocumentMoniker": "OmokGameClient\\mainForm.Designer.cs",
-              "ToolTip": "D:\\Computer\\Development\\Game\\Server\\com2us\\Omok\\OmokGameClient\\OmokGameClient\\mainForm.Designer.cs*",
-              "RelativeToolTip": "OmokGameClient\\mainForm.Designer.cs*",
+              "ToolTip": "D:\\Computer\\Development\\Game\\Server\\com2us\\Omok\\OmokGameClient\\OmokGameClient\\mainForm.Designer.cs",
+              "RelativeToolTip": "OmokGameClient\\mainForm.Designer.cs",
               "ViewState": "AQIAAPAAAAAAAAAAAIAzwP4AAAAtAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-05-19T05:57:26.387Z",
