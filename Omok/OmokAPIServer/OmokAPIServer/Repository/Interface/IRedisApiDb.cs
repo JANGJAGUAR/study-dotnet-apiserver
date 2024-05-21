@@ -1,4 +1,4 @@
-using OmokAPIServer.CS;
+using OmokShareProject;
 
 namespace OmokAPIServer.Repository.Interface;
 

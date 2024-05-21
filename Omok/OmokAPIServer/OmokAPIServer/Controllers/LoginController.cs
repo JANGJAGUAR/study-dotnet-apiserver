@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
-using OmokAPIServer.CS;
 using OmokAPIServer.Model;
 using OmokAPIServer.Repository.Interface;
 using OmokAPIServer.Service.Interface;
+using OmokShareProject;
 using ZLogger;
 
 namespace OmokAPIServer.Controllers;
@@ -28,10 +28,11 @@ public class Login : ControllerBase
     public async Task<LoginResponse> LoginAndLoadData(LoginRequest request)
     {
         LoginResponse response = new();
+        Console.Write("Test1");
 
         
         // API 레디스에 토큰 체크
-        (var errorCode, response.AuthToken) = await _authService.VerifyTokenToRedisApiDb(request.Id, request.Password);
+        (ErrorCode errorCode, response.AuthToken) = await _authService.VerifyTokenToRedisApiDb(request.UserId, request.Password);
         
         // (에러 처리)
         if (errorCode != ErrorCode.None)
@@ -42,12 +43,12 @@ public class Login : ControllerBase
         
         
         //유저 있는지 확인
-        errorCode = await _authService.VerifyUserToRdb(request.Id);
+        errorCode = await _authService.VerifyUserToRdb(request.UserId);
         
         // 유저가 없다면 유저 데이터 생성
         if(errorCode == ErrorCode.LoginFailUserNotExist)
         {
-            errorCode = await _userInfoRdb.CreateNewUser(request.Id);
+            errorCode = await _userInfoRdb.CreateNewUser(request.UserId);
         }
         
         // (에러 처리)
@@ -59,7 +60,7 @@ public class Login : ControllerBase
         
         
         //로그인 시간 업데이트
-        errorCode = await _userInfoRdb.UpdateLastLoginTime(request.Id);
+        errorCode = await _userInfoRdb.UpdateLastLoginTime(request.UserId);
         
         // (에러 처리)
         if (errorCode != ErrorCode.None)
@@ -70,7 +71,7 @@ public class Login : ControllerBase
         
         
         // 유저 데이터 로드
-        (errorCode, response.UserData) = await _userInfoRdb.GetUserDataById(request.Id);
+        (errorCode, response.UserData) = await _userInfoRdb.GetUserDataById(request.UserId);
         if (errorCode != ErrorCode.None)
         {
             response.Result = errorCode;
@@ -93,7 +94,7 @@ public class LoginRequest
     [Required]
     [MinLength(1, ErrorMessage = "ID CANNOT BE EMPTY")]
     [StringLength(30, ErrorMessage = "ID IS TOO LONG")]
-    public string Id { get; set; }
+    public string UserId { get; set; }
 
     [Required]
     [MinLength(1, ErrorMessage = "PASSWORD CANNOT BE EMPTY")]

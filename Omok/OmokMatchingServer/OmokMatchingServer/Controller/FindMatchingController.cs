@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
-using OmokMatchingServer.CS;
 using OmokMatchingServer.Service.Interface;
+using OmokShareProject;
 
 namespace OmokMatchingServer.Controller;
 

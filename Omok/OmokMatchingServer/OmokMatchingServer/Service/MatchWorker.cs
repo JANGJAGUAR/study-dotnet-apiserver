@@ -1,9 +1,9 @@
 using System.Collections.Concurrent;
 using CloudStructures;
 using Microsoft.Extensions.Options;
-using OmokMatchingServer.CS;
 using OmokMatchingServer.Model;
 using OmokMatchingServer.Service.Interface;
+using OmokShareProject;
 
 namespace OmokMatchingServer.Service;
 
@@ -11,12 +11,10 @@ public class MatchWorker : IMatchWorker
 {
     List<string> _pvpServerAddressList = new();
 
-    System.Threading.Thread _reqWorker = null;
+    System.Threading.Thread _matchWorker = null;
     ConcurrentQueue<string> _reqQueue = new();
     
     Queue<int> _roomNoQueue = new();
-
-    System.Threading.Thread _completeWorker = null;
 
     // key는 유저ID
     ConcurrentDictionary<string, string> _completeMatchingDic = new();
@@ -47,7 +45,7 @@ public class MatchWorker : IMatchWorker
         
         var redis = new CloudStructures.Structures.RedisList<string>(_redisConn, key, defaultExpiry);
         
-        redis.RightPushAsync("0.0.0.0/0000"); //TODO: 이것들은 따로 레디스에 넣어주기
+        redis.RightPushAsync("34.64.235.108:32452"); //TODO:소켓 서버 정보, 이것들은 따로 레디스에 넣어주기
         
         // 방 번호 1개씩 갖다쓰기 위해 초기화
         var RoomMaxNumber = 100; //TODO: Config로 받기 
@@ -57,16 +55,25 @@ public class MatchWorker : IMatchWorker
         }
         
         
-        _reqWorker = new System.Threading.Thread(this.RunMatching);
-        _reqWorker.Start();
+        _matchWorker = new System.Threading.Thread(this.RunMatching);
+        _matchWorker.Start();
 
-        _completeWorker = new System.Threading.Thread(this.RunMatchingComplete);
-        _completeWorker.Start();
     }
     
-    public void AddUserReqQueue(string userId)
+    public ErrorCode AddUserReqQueue(string userId)
     {
-        _reqQueue.Enqueue(userId);
+        ErrorCode errorCode = ErrorCode.None;
+        try
+        {
+            _reqQueue.Enqueue(userId);
+            return errorCode;
+        }
+        catch (Exception ex)
+        {
+            errorCode = ErrorCode.Matching_Fail_Notqueued;
+            return errorCode;
+        }
+        
     }
 
     public (bool, MatchingData) GetCompleteMatchingDic(string userId)
@@ -122,9 +129,9 @@ public class MatchWorker : IMatchWorker
                         Console.WriteLine($"[Matching Error] ErrorCode:{ErrorCode.MatchingFailRedisNotExist}");
                     }
                     
-                    // 게임 서버에 두 친구를 전달
-                    //TODO: 저 주소로 소켓에 연결 후 두명 접속+로그인까지 요청
-                    //TODO: 매칭서버가 예전의 클라 접속+로그인 기능을 해야함
+                    // 게임 서버 정보를 두 친구에게 전달하기 위해 _completeMatchingDic에다가 (userid, 서버주소)형태로 넣기
+                    _completeMatchingDic.TryAdd(matchingId1, roomSocketServerAddress.Value);
+                    _completeMatchingDic.TryAdd(matchingId2, roomSocketServerAddress.Value);
                     
                 }
 
@@ -134,35 +141,6 @@ public class MatchWorker : IMatchWorker
                 Console.WriteLine($"[Matching Error] ErrorCode:{ErrorCode.MatchingFailException}");
             }
         }
-    }
-
-    void RunMatchingComplete()
-    {
-        while (true)
-        {
-            try
-            {
-                //TODO: 레디스에서 서버 정보 받기
-                // var roomSocketServerAddress = "";
-                var redis = new CloudStructures.Structures.RedisList<string>(_redisConn, key, defaultExpiry);
-                var roomSocketServerAddress = redis.LeftPopAsync().Result;
-                if (roomSocketServerAddress.HasValue == false)
-                {
-                    Console.WriteLine($"[Matching Error] ErrorCode:{ErrorCode.MatchingFailRedisNotExist}");
-                }
-                
-                // 게임 서버에서 두 친구를 연결 결과를 받기
-                //TODO: 저 주소로 소켓에 연결 후 두명 접속+로그인 응답 받기
-                
-                // _completeMatchingDic에다가 (userid, 서버주소)형태로 넣기
-                _completeMatchingDic.TryAdd(matchingId1, roomSocketServerAddress.Value);
-                _completeMatchingDic.TryAdd(matchingId2, roomSocketServerAddress.Value);
-            }
-            catch (Exception ex)
-            {
-
-            }
-        }        
     }
 
 

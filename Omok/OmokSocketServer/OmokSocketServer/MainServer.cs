@@ -3,7 +3,7 @@ using MemoryPack;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OmokSocketServer.CS;
+using OmokShareProject;
 using OmokSocketServer.Manager;
 using OmokSocketServer.Model;
 using OmokSocketServer.NLog;

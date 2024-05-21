@@ -1,7 +1,7 @@
-using OmokAPIServer.CS;
 using OmokAPIServer.Model;
 using OmokAPIServer.Repository.Interface;
 using OmokAPIServer.Service.Interface;
+using OmokShareProject;
 using ZLogger;
 
 namespace OmokAPIServer.Service;

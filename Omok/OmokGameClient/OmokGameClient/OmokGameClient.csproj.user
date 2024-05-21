@@ -4,6 +4,9 @@
     <Compile Update="mainForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="OmokBoard.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="PktProcessMainForm.cs">
       <SubType>Form</SubType>
     </Compile>

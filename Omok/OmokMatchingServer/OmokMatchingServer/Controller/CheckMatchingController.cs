@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using OmokMatchingServer.CS;
 using OmokMatchingServer.Service.Interface;
+using OmokShareProject;
 
 namespace OmokMatchingServer.Controller;
 
@@ -23,7 +23,6 @@ public class CheckMatching : ControllerBase
 
         (var result, var matchingData) = _matchWorker.GetCompleteMatchingDic(request.UserId);
         
-        //TODO: matchingData의 내용이 있으면, 소켓 서버로 연결을 시켜주고, 결과를 담아서 보낸다
         return response;
     }
 }

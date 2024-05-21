@@ -1,4 +1,4 @@
-using OmokSocketServer.CS;
+using OmokShareProject;
 
 namespace OmokSocketServer.Manager;
 

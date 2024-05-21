@@ -15,4 +15,8 @@
       <PackageReference Include="SuperSocketLite" Version="0.17.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\OmokShareProject\OmokShareProject\OmokShareProject.csproj" />
+    </ItemGroup>
+
 </Project>

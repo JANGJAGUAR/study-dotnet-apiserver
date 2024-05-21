@@ -1,6 +1,7 @@
 ﻿using MemoryPack;
-using OmokSocketServer.CS;
+using OmokShareProject;
 using OmokSocketServer.Manager;
+using PvPGameServer.CS;
 
 namespace OmokSocketServer.Packet;
 
@@ -12,7 +13,7 @@ public class PKHRoom : PKHandler
 
     private DateTime _nowTime;
 
-    OmokRule OmokLogic = new OmokRule();
+    OmokRule _omokRule = new OmokRule();
     
     public void SetRooomList(List<Room> roomList)
     {
@@ -332,7 +333,7 @@ public class PKHRoom : PKHandler
                 }
 
                 // 게임 초기화
-                OmokLogic.StartGame();
+                _omokRule.StartGame();
                 // room.WaitingSID = "";
                 room.GetRoomUserByNetSessionId(room.NowTurnSID).TurnCount = 0;
                 room.GetRoomUserByNetSessionId(room.NextTurnSID).TurnCount = 0;
@@ -379,7 +380,7 @@ public class PKHRoom : PKHandler
             var room = GetRoom(user.RoomNumber);
             
             var reqData = MemoryPackSerializer.Deserialize<PKTReqPutStone>(packetData.Data);
-            var putStoneResult = OmokLogic.돌두기(reqData.xPos, reqData.yPos);
+            var putStoneResult = _omokRule.돌두기(reqData.xPos, reqData.yPos);
             
             // 돌을 둔 클라한테는 결과 반환
             ResponsePutstone(putStoneResult, sessionID, reqData.xPos, reqData.yPos);
@@ -403,7 +404,7 @@ public class PKHRoom : PKHandler
     // 지금 둔 클라에게 응답
     void ResponsePutstone(ErrorCode errorCode, string sessionID, int xpos, int ypos)
     {
-        var iswin =  OmokLogic.오목확인(xpos, ypos);
+        var iswin =  _omokRule.오목확인(xpos, ypos);
         
         var resGameStart = new PKTResPutStone();
         
@@ -428,7 +429,7 @@ public class PKHRoom : PKHandler
     // 다음에 둘 클라에게 응답
     void ResponseTurnChange(string sessionID, int xpos, int ypos)
     {
-        var islose =  OmokLogic.오목확인(xpos, ypos);
+        var islose = _omokRule.오목확인(xpos, ypos);
         
         //상대가 둔거 알려줘야 함
         var resGameStart = new PKTResTurnChange();

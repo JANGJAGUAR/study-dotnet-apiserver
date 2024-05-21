@@ -1,5 +1,5 @@
 using System.Threading.Tasks.Dataflow;
-using OmokSocketServer.CS;
+using OmokShareProject;
 using OmokSocketServer.Manager;
 using OmokSocketServer.Model;
 using OmokSocketServer.Packet;

@@ -1,5 +1,5 @@
 ﻿using MemoryPack;
-using OmokSocketServer.CS;
+using OmokShareProject;
 using OmokSocketServer.Manager;
 
 namespace OmokSocketServer.Packet;

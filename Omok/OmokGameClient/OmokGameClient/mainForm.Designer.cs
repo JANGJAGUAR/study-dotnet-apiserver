@@ -197,11 +197,13 @@ partial class OmokClient
         // OmokBoard
         // 
         OmokBoard.BackColor = Color.Peru;
-        OmokBoard.Location = new Point(400, 12);
+        OmokBoard.Location = new Point(410, 12);
         OmokBoard.Name = "OmokBoard";
-        OmokBoard.Size = new Size(800, 800);
+        OmokBoard.Size = new Size(780, 800);
         OmokBoard.TabIndex = 3;
-        OmokBoard.Paint += panel1_Paint;
+        OmokBoard.Paint += OmokBoard_Paint;
+        OmokBoard.MouseDown += OmokBoard_MouseDown;
+        OmokBoard.MouseMove += OmokBoard_MouseMove;
         // 
         // Room_Box
         // 
@@ -589,6 +591,7 @@ partial class OmokClient
         Name = "OmokClient";
         Text = "OmokClient";
         Load += mainForm_Load;
+        FormClosing += mainForm_FormClosing;
         Login_Box.ResumeLayout(false);
         Login_Box.PerformLayout();
         Room_Box.ResumeLayout(false);
