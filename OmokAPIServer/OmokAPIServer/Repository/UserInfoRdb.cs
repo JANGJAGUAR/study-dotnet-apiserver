@@ -1,9 +1,9 @@
 using System.Data;
 using Microsoft.Extensions.Options;
 using MySqlConnector;
-using OmokAPIServer.CS;
 using OmokAPIServer.Model;
 using OmokAPIServer.Repository.Interface;
+using OmokShareProject;
 using SqlKata.Execution;
 using ZLogger;
 

@@ -29,4 +29,4 @@ if (app.Environment.IsDevelopment())
 }
 app.MapDefaultControllerRoute();
 
-app.Run(configuration["ServerAddress"]);
+app.Run();

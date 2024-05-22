@@ -1,7 +1,7 @@
-using OmokAPIServer.CS;
 using OmokAPIServer.Model;
 using OmokAPIServer.Repository.Interface;
 using OmokAPIServer.Service.Interface;
+using OmokShareProject;
 using ZLogger;
 
 namespace OmokAPIServer.Service;
@@ -11,43 +11,43 @@ public class AuthService : IAuthService
     private readonly ILogger<AuthService> _logger;
     private readonly IRedisApiDb _redisApiDb;
     private readonly IUserInfoRdb _userInfoRdb;
-    string _hiveServerAPIAddress;
+    readonly string _hiveServerApiAddress;
 
     public AuthService(ILogger<AuthService> logger, IConfiguration configuration, IRedisApiDb redisApiDb, IUserInfoRdb userInfoRdb)
     {
         _logger = logger;
         _redisApiDb = redisApiDb;
         _userInfoRdb = userInfoRdb;
-        _hiveServerAPIAddress = configuration.GetSection("HiveServerAddress").Value + "/VerifyToken";
+        _hiveServerApiAddress = configuration.GetSection("HiveServerAddress").Value + "/VerifyToken";
         //TODO: hive 이 이름 맞는지 확인
     }
     public async Task<(ErrorCode, string)> VerifyTokenToRedisApiDb(string id, string password)
     {
         
         // 없으면 만들어야함
-        if (await _redisApiDb.VerifyUserToken(id) != ErrorCode.None)
+        if (await _redisApiDb.CheckExistenceToken(id) != ErrorCode.None)
         {
             try
             {
                 HttpClient client = new();
             
                 // HTTP 전송
-                var hiveResponse = await client.PostAsJsonAsync(_hiveServerAPIAddress, new { UserId = id, Password = password });
+                var hiveResponse = await client.PostAsJsonAsync(_hiveServerApiAddress, new { UserId = id, Password = password });
                 
                 //TODO: hive에 이거 받아서 주는 놈 만들기
                 
                 // (에러 처리)
-                if (hiveResponse == null|| !ValidateHiveResponse(hiveResponse))
+                if (hiveResponse == null)
                 {
                     _logger.ZLogDebug($"[VerifyTokenToHive Service] ErrorCode:{ErrorCode.Hive_Fail_InvalidResponse}, UserID = {id}, Password = {password}");
                     return (ErrorCode.Hive_Fail_InvalidResponse, "");
                 }
 
                 // HTTP 응답 (에러코드, 토큰 받음) 
-                var authResult = await hiveResponse.Content.ReadFromJsonAsync<ErrorCodeDTO>();
+                var authResult = await hiveResponse.Content.ReadFromJsonAsync<HiveResponse>();
                 
                 // (에러 처리)
-                if (!ValidateHiveAuthErrorCode(authResult))
+                if (authResult == null)
                 {
                     return (ErrorCode.Hive_No_Response, "");
                 }
@@ -92,27 +92,8 @@ public class AuthService : IAuthService
         }
     }
     
-    //TODO: 밑에 3개 기능 확인
-    public bool ValidateHiveResponse(HttpResponseMessage? response)
-    {
-        if (response.StatusCode != System.Net.HttpStatusCode.OK)
-        {
-            return false;
-        }
-        return true;
-    }
-
-    bool ValidateHiveAuthErrorCode(ErrorCodeDTO? authResult)
-    {
-        if (authResult == null || authResult.Result != ErrorCode.None)
-        {
-            return false;
-        }
-    
-        return true;
-    }
 }
-public class ErrorCodeDTO
+public class HiveResponse
 {
     public ErrorCode Result { get; set; } = ErrorCode.None;
     public string AuthToken { get; set; } = "";

@@ -1,5 +1,5 @@
-using OmokAPIServer.CS;
 using OmokAPIServer.Model;
+using OmokShareProject;
 
 namespace OmokAPIServer.Repository.Interface;
 
