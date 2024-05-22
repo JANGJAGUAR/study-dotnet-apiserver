@@ -18,12 +18,14 @@ public class FindMatching : ControllerBase
     }
 
     [HttpPost]
+    //API 서버에서 인증받은 ID가 담긴 HTTP 요청
     public FindMatchingResponse Post(FindMatchingRequest request)
     {
         FindMatchingResponse response = new();
 
         _matchWorker.AddUserReqQueue(request.UserId);
 
+        //TODO: 에러처리
         return response;
     }
     

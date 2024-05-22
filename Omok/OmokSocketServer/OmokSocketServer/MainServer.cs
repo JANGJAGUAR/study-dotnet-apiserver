@@ -11,7 +11,7 @@ using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Config;
 using SuperSocket.SocketBase.Logging;
 using SuperSocket.SocketBase.Protocol;
-using Timer = System.Threading.Timer;
+using Timer = System.Timers.Timer;
 
 namespace OmokSocketServer;
 
@@ -77,12 +77,11 @@ public class MainServer : AppServer<NetworkSession, MemoryPackBinaryRequestInfo>
             return;
         }
 
-        // Timer serverTimer;
-        // serverTimer = new Timer();
-        // serverTimer.Interval = _serverOpt.HeartbeatInterval;
-        // serverTimer.Elapsed += ServerTimer;
-        // serverTimer.AutoReset = true;
-        // serverTimer.Enabled = true;
+        Timer serverTimer = new Timer();
+        serverTimer.Interval = _serverOpt.HeartbeatInterval;
+        serverTimer.Elapsed += ServerTimer;
+        serverTimer.AutoReset = true;
+        serverTimer.Enabled = true;
 
     }
     private void ServerTimer(Object source, ElapsedEventArgs e)

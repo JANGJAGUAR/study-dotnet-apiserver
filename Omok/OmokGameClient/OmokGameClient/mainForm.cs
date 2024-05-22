@@ -319,7 +319,7 @@ public partial class OmokClient : Form
     // 매칭 요청 버튼
     private void Matching_Btn_Click(object sender, EventArgs e)
     {
-        _apiService.MatchingServerFind(ID_Label.Text);
+        _apiService.MatchingServerFind(ID_Label.Text, Token_Label.Text);
     }
     
     // 준비 완료 버튼

@@ -55,7 +55,7 @@ public class RedisApiDb : IRedisApiDb
 
         return result;
     }
-    public async Task<ErrorCode> VerifyUserToken(string id)
+    public async Task<ErrorCode> CheckExistenceToken(string id)
     {
         string key = "UID_"+id;
         var result = ErrorCode.None;
@@ -74,6 +74,41 @@ public class RedisApiDb : IRedisApiDb
             if (user.Value.UserId != id)
             {
                 result = ErrorCode.CheckAuthFailNotMatch;
+                return result;
+            }
+        }
+        catch
+        {
+            result = ErrorCode.CheckAuthFailException;
+            return result;
+        }
+        
+        return result;
+    }
+    public async Task<ErrorCode> VerifyUserToken(string id, string token)
+    {
+        string key = "UID_"+id;
+        var result = ErrorCode.None;
+
+        try
+        {
+            RedisString<RedisAuthData> redis = new(_redisConn, key, null);
+            RedisResult<RedisAuthData> user = await redis.GetAsync();
+
+            // (에러처리)
+            if (!user.HasValue)
+            {
+                result = ErrorCode.CheckAuthFailNotExist;
+                return result;
+            }
+            if (user.Value.UserId != id)
+            {
+                result = ErrorCode.CheckAuthFailNotMatch;
+                return result;
+            }
+            if (user.Value.AuthToken != token)
+            {
+                result = ErrorCode.CheckAuthFailNotMatchToken;
                 return result;
             }
         }

@@ -60,13 +60,13 @@ public class APIService
             Console.WriteLine($"Request error: {e.Message}");
         }
     }
-    public async void MatchingServerFind(string userid)
+    public async void MatchingServerFind(string userid, string token)
     {
         // HTTP 전송
         try
         {
             // POST 요청 보내기
-            var matchingFindResponse = await _client.PostAsJsonAsync(_matchingServerAddress+"/FindMatching", new { UserId = userid });
+            var matchingFindResponse = await _client.PostAsJsonAsync(_apiServerAddress+"/FindMatching", new { UserId = userid, Token = token });
 
             // 응답 성공 여부 확인
             matchingFindResponse.EnsureSuccessStatusCode();

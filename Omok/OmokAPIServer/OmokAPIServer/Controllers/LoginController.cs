@@ -28,12 +28,14 @@ public class Login : ControllerBase
     public async Task<LoginResponse> LoginAndLoadData(LoginRequest request)
     {
         LoginResponse response = new();
-        Console.Write("Test1");
 
-        
+        //TODO: 로그로 어디까지 됐는지 구분
+        Console.Write("Test");
+
+
         // API 레디스에 토큰 체크
         (ErrorCode errorCode, response.AuthToken) = await _authService.VerifyTokenToRedisApiDb(request.UserId, request.Password);
-        
+
         // (에러 처리)
         if (errorCode != ErrorCode.None)
         {

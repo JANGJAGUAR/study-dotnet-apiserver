@@ -86,6 +86,8 @@ public class PKHRoom : PKHandler
 
         _roomMgr.CheckRoomList();
         _userMgr.CheckUserList();
+        
+        //TODO: 레디스 DB에 접근해서 체크하는 함수 실행, 핸들러에 객체 만들고 참조만 해와서 함수 실행 
     }
     
     // 클라한테 받은 HeartBeat를 처리하는 함수

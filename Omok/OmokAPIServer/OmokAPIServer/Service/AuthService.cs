@@ -25,7 +25,7 @@ public class AuthService : IAuthService
     {
         
         // 없으면 만들어야함
-        if (await _redisApiDb.VerifyUserToken(id) != ErrorCode.None)
+        if (await _redisApiDb.CheckExistenceToken(id) != ErrorCode.None)
         {
             try
             {
